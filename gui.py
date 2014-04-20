@@ -22,7 +22,7 @@ def draw_inventory(con, inventory, title):
     tcod.console_flush()
     
 def draw_directions(con, target):
-    tcod.console_clear(con)
+    #tcod.console_clear(con)
     tcod.console_set_default_foreground(con, COL_A)
     tcod.console_put_char(con, target.x-1, target.y, tcod.CHAR_ARROW_W)
     tcod.console_put_char(con, target.x+1, target.y, tcod.CHAR_ARROW_E)
@@ -83,14 +83,30 @@ def draw_visible(con):
     tcod.console_print(con, 1, game.GAME_HEIGHT - 4, chr(254)+' '+line)
     
 def draw_main_menu(con):
-    img = tcod.image_load('small.png')
-    tcod.image_blit_2x(img, 0, 0, 0)
-        
-    line = ('-'*16+"\n == GAM MENU == \n"+'-'*16+
-             "\n\n\n n - new game \n c - continue \n esc - exit \n(d)elete")
     tcod.console_set_default_foreground(con, COL_A)
-    tcod.console_print_ex(con, game.GAME_WIDTH/2, game.GAME_HEIGHT/3,
-                              tcod.BKGND_ADD, tcod.CENTER,line)
+    img = tcod.image_load('small.png')
+    tcod.image_set_key_color(img, tcod.red)
+    tcod.image_blit(img, 0, 45, 30,  tcod.BKGND_LIGHTEN, .5, .25, 0)
+    #tcod.image_blit_2x(img, 0, 0, 0)
+    
+    xx=-20
+    yy=15
+    
+    options=(
+             """
+             GAME TITLE """+chr(tcod.CHAR_BLOCK2)+chr(tcod.CHAR_BLOCK1)+chr(tcod.CHAR_BLOCK1)+"""
+             |
+             |
+             \t-- (n)ew game
+             |
+             \t--\t-- (c)ontinue
+             |  |
+             |  \t-- (d)elete
+             |
+             \t-- (esc)cape
+             """)
+    tcod.console_print_ex(con, game.GAME_WIDTH/4+xx, game.GAME_HEIGHT/3+yy,
+                              tcod.BKGND_LIGHTEN, tcod.LEFT,options)
     tcod.console_flush()
     tcod.console_clear(con)
     

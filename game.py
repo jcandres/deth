@@ -162,4 +162,3 @@ class Game:
             self.save_game()
             print 'saved!'
         self.menu()
-        
