@@ -42,13 +42,22 @@ class Healer(Pickable):
     def use(self, wearer, target):
         if wearer and wearer.container:
             wearer.container.inventory.remove(self.owner)
-    
+        a = target.destructible.heal(self.amount)
+        if a > 0:
+            game.log(target.name, 'heals by', a, 'hp')
+            return True
+        else:
+            game.log('but it has no visible effect!')
+            return False
+            
 class Explosive(Pickable):
     def __init__(self, radius, damage):
         Pickable.__init__(self) 
         self.radius = radius + tcod.random_get_int(0, 0, 5)
         self.damage = damage
     def use(self, wearer, target):
+        if game.player.ai.choose_direction() is None:
+            return False
         for x in range(wearer.x-self.radius, wearer.x+self.radius):
             for y in range(wearer.y-self.radius, wearer.y+self.radius):
                 if not map.is_wall(x, y):

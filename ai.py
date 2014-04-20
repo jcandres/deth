@@ -11,6 +11,82 @@ import gui
 class Ai(core.Ai):
     pass
 
+class AiPlayer(Ai):
+    def update(self):
+        dx = 0
+        dy = 0
+        if game.key.vk == tcod.KEY_RIGHT:
+            dx = +1
+        elif game.key.vk == tcod.KEY_LEFT:
+            dx = -1
+        elif game.key.vk == tcod.KEY_UP:
+            dy = -1
+        elif game.key.vk == tcod.KEY_DOWN:
+            dy = +1
+        else:
+            self.handle_action_key(game.key.c)
+            
+        #process attacks or movement
+        if dx != 0 or dy != 0:
+            e = map.get_actor_alive(self.owner.x+dx, self.owner.y+dy)
+            if e and e.blocks and e.destructible:
+                nam = e.name
+                self.owner.attacker.attack(e)
+                game.log(self.owner.name, 'hit the', nam)
+                if e.destructible.is_dead():
+                    game.log(self.owner.name, 'killed the', nam)
+                game.game_state = enum.GameS.NEW_TURN #
+            elif game.player.move(dx, dy):
+                game.game_state = enum.GameS.NEW_TURN #
+    
+    def handle_action_key(self, key):
+        #inventory
+        if key == ord("i"):
+            item = self.choose_from_inventory(self.owner.container.inventory)
+            if item is not None and item.pickable.use(self.owner, self.owner):
+                game.log('you used a', item.name)
+        #grab
+        elif key == ord("g"):
+            self.owner.send_front()
+            e = map.get_actor_pickable(self.owner.x, self.owner.y)
+            if e and e.pickable:
+                if e.pickable.pick(self.owner):
+                    game.log('you pick a', e.name)
+                    game.game_state = enum.GameS.NEW_TURN #
+                else:
+                    game.log("you can't carry more")
+        #look
+        elif key == ord(";"):
+            self.owner.send_front() #will be checked the last 
+            e = map.get_actor(self.owner.x, self.owner.y)
+            if e and e is not self.owner:
+                game.log('you see a', e.name, 'here')
+            else:
+                game.log("there's nothing of interest here")
+            game.game_state = enum.GameS.NEW_TURN #
+            
+    def choose_from_inventory(self, inventory):
+        gui.draw_inventory(0, inventory, "inventory")
+        key = tcod.console_wait_for_keypress(True)
+        if key.vk == tcod.KEY_CHAR:
+            actor_index = key.c - ord('a')
+            if actor_index >= 0 and actor_index < len(inventory):
+                return inventory[actor_index]
+        return None
+    def choose_direction(self):
+        gui.draw_directions(0, self.owner)
+        key = tcod.console_wait_for_keypress(True)
+        key = tcod.console_wait_for_keypress(True)
+        if key.vk == tcod.KEY_RIGHT:
+            return enum.dir.RIGHT
+        elif key.vk == tcod.KEY_LEFT:
+            return enum.dir.LEFT
+        elif key.vk == tcod.KEY_UP:
+            return enum.dir.UP
+        elif key.vk == tcod.KEY_DOWN:
+            return enum.dir.DOWN
+        return None
+
 class AiZombie(Ai):
     
     def __init__(self):
@@ -49,66 +125,4 @@ class AiZombie(Ai):
                         game.log('a', self.owner.name, 'hits the', e.name)
             
         
-class AiPlayer(Ai):
-    def update(self):
-        dx = 0
-        dy = 0
-        if game.key.vk == tcod.KEY_RIGHT:
-            dx = +1
-        elif game.key.vk == tcod.KEY_LEFT:
-            dx = -1
-        elif game.key.vk == tcod.KEY_UP:
-            dy = -1
-        elif game.key.vk == tcod.KEY_DOWN:
-            dy = +1
-        else:
-            self.handle_action_key(game.key.c)
-            
-        #process attacks or movement
-        if dx != 0 or dy != 0:
-            e = map.get_actor_alive(self.owner.x+dx, self.owner.y+dy)
-            if e and e.blocks and e.destructible:
-                nam = e.name
-                self.owner.attacker.attack(e)
-                game.log(self.owner.name, 'hit the', nam)
-                if e.destructible.is_dead():
-                    game.log(self.owner.name, 'killed the', nam)
-                game.game_state = enum.GameS.NEW_TURN #
-            elif game.player.move(dx, dy):
-                game.game_state = enum.GameS.NEW_TURN #
-    
-    def handle_action_key(self, key):
-        #inventory
-        if key == ord("i"):
-            item = self.choose_from_inventory(self.owner.container.inventory)
-            if item is not None:
-                game.log('you used a', item.name)
-                item.pickable.use(self.owner, self.owner)
-        #grab
-        elif key == ord("g"):
-            self.owner.send_front()
-            e = map.get_actor_pickable(self.owner.x, self.owner.y)
-            if e and e.pickable:
-                if e.pickable.pick(self.owner):
-                    game.log('you pick a', e.name)
-                    game.game_state = enum.GameS.NEW_TURN #
-                else:
-                    game.log("you can't carry more")
-        #look
-        elif key == ord(";"):
-            self.owner.send_front() #will be checked the last 
-            e = map.get_actor(self.owner.x, self.owner.y)
-            if e and e is not self.owner:
-                game.log('you see a', e.name, 'here')
-            else:
-                game.log("there's nothing of interest here")
-            game.game_state = enum.GameS.NEW_TURN #
-            
-    def choose_from_inventory(self, inventory):
-        gui.draw_inventory(0, inventory, "inventory")
-        key = tcod.console_wait_for_keypress(True)
-        if key.vk == tcod.KEY_CHAR:
-            actor_index = key.c - ord('a')
-            if actor_index >= 0 and actor_index < len(inventory):
-                return inventory[actor_index]
-        return None
+

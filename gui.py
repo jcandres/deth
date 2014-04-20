@@ -21,6 +21,15 @@ def draw_inventory(con, inventory, title):
         tcod.console_print(con, xx+2, yy+1+i,' %s - %s '  % (chr(ord('a')+i), inventory[i].name))
     tcod.console_flush()
     
+def draw_directions(con, target):
+    tcod.console_clear(con)
+    tcod.console_set_default_foreground(con, COL_A)
+    tcod.console_put_char(con, target.x-1, target.y, tcod.CHAR_ARROW_W)
+    tcod.console_put_char(con, target.x+1, target.y, tcod.CHAR_ARROW_E)
+    tcod.console_put_char(con, target.x, target.y-1, tcod.CHAR_ARROW_N)
+    tcod.console_put_char(con, target.x, target.y+1, tcod.CHAR_ARROW_S)
+    tcod.console_flush()
+    
 #draws player stats
 def draw_hud(con):
     tcod.console_set_default_foreground(con, COL_A)

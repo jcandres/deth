@@ -7,4 +7,8 @@ class GameS:
     VICTORY = 3
     DEFEAT = 4
     
-    
+class dir:
+    UP = (0, -1)
+    DOWN = (0, +1)
+    RIGHT = (+1, 0)
+    LEFT = (-1, 0)
