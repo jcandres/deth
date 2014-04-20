@@ -1,0 +1,7 @@
+*.pyc
+*.komodoproject
+.komodotools
+.dist
+*.exe
+save
+*.save
