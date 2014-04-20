@@ -130,6 +130,9 @@ class Game:
                         while object.action_points >= NORMAL_SPEED:
                             object.update()
                             object.action_points -= NORMAL_SPEED
+                    for object in actors:
+                        if object.remove:
+                            actors.remove(object)
                         
                     if game_state == enum.GameS.DEFEAT:
                         if os.path.isfile('save'):
@@ -153,8 +156,10 @@ class Game:
         tcod.console_flush()
         
     def end(self):
-        global game_state
+        global game_state, turn
+        print 'end-func: total turns', turn
         if game_state is not enum.GameS.DEFEAT:
             self.save_game()
-            print 'total turns',turn, 'saved!'
+            print 'saved!'
         self.menu()
+        

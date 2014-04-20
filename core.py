@@ -19,6 +19,7 @@ class Object:
                 
         self.speed = speed
         self.action_points = tcod.random_get_int(0,0,speed)
+        self.remove = False
         
         self.destructible = destructible
         self.ai = ai

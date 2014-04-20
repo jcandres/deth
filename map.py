@@ -102,7 +102,11 @@ def make_monster(x, y):
     m = ent.Zombie(x, y)
     game.actors.append(m)
 def make_item(x, y):
-    it = item.PotionHeal(x, y)
+    dice = tcod.random_get_int(0,0,99)
+    if dice < 50:
+        it = item.PotionHeal(x, y)
+    else:
+        it = item.GrenadeSmoke(x, y)
     game.actors.append(it)
     
 
@@ -142,8 +146,10 @@ def dig_v_tunnel(y1, y2, x):
         set_wall(x, y, False, False)
             
 def set_wall(x, y, solid=True, visible=True):
-    map[x][y].blocked = solid
-    map[x][y].block_sight = visible
+    if solid is not None:
+        map[x][y].blocked = solid
+    if visible is not None:
+        map[x][y].block_sight = visible
 
 
 ## utils and shit ##
@@ -188,7 +194,9 @@ def bsp_callback(node, data):
 def fov_init():
     for y in range(MAP_HEIGHT):
         for x in range(MAP_WIDTH):
-            tcod.map_set_properties(fov_map, x, y, not map[x][y].block_sight, not map[x][y].blocked)
+            fov_set(x, y, not map[x][y].block_sight, map[x][y].blocked)
+def fov_set(x, y, visible, blocked):
+    tcod.map_set_properties(fov_map, x, y, visible, not blocked)
 def fov_recompute(x, y):
     tcod.map_compute_fov(fov_map, x, y, LIGHT_RADIUS, True, 0)
 def is_fov(x, y):

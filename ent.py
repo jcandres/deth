@@ -26,6 +26,22 @@ class Player(Entity):
         
         Entity.__init__(self, x, y, name=self.name, char=self.char, speed=self.speed,
                         attacker=_at, ai=_ai, destructible=_de, container=_co)
+        
+class Smoke(Entity):
+    def __init__(self, x, y, life):
+        self.name = 'smoke'
+        self.char = chr(tcod.CHAR_BLOCK2)
+        self.life = life
+        Entity.__init__(self, x, y, name=self.name, char=self.char, blocks=False)
+        if not map.is_wall(self.x, self.y):
+            map.fov_set(self.x, self.y, visible=False, blocked=map.is_wall(self.x, self.y))
+    def update(self):
+        Entity.update(self)
+        self.life -= 1
+        if self.life <= 0:
+            self.remove = True
+            map.fov_set(self.x, self.y, visible=True, blocked=map.is_wall(self.x, self.y))
+            #print game.actors.remove(self)
 
 class Zombie(Entity):
     def __init__(self, x, y):
