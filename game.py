@@ -112,6 +112,7 @@ class Game:
         
         game_state = enum.GameS.IDLE
         tcod.console_flush()
+
             
     def loop(self):
         global game_state, key
@@ -120,28 +121,29 @@ class Game:
                 game_state = enum.GameS.IDLE
             
             key = tcod.console_check_for_keypress(True)
-            player.take_turn()
-            print player.action_points
-                  
+            player.take_turn() #different actions will trigger the new turn
+            
+            ### turn loop
             if game_state == enum.GameS.NEW_TURN:
-                player.action_points -= NORMAL_SPEED #for rolling the new turn
-                while player.action_points < 0:
+                player.action_points -= NORMAL_SPEED #player pays its movement
+                while player.action_points < NORMAL_SPEED: #player can't move, party time
                     for object in actors:
                         object.action_points += object.speed
                         while object.action_points >= NORMAL_SPEED:
                             object.update()
                             object.action_points -= NORMAL_SPEED
-                        
-                for object in actors:
+                    player.action_points += player.speed
+                
+                for object in actors: #remove unnecesary entities safely
                     if object.remove:
                         actors.remove(object)
                     
                 if game_state == enum.GameS.DEFEAT:
                     if os.path.isfile('save'):
                         os.remove('save')
-                    break
                 map.fov_recompute(player.x, player.y)
-                
+            ### end of turn loop
+            
             draw_all()
             tcod.console_flush()
             if key.vk == tcod.KEY_ESCAPE:

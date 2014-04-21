@@ -22,7 +22,7 @@ class Player(Entity):
         _co = item.Container(5)
         self.name = 'you'
         self.char = '@'
-        self.speed = 30
+        self.speed = 10
         
         Entity.__init__(self, x, y, name=self.name, char=self.char, speed=self.speed,
                         attacker=_at, ai=_ai, destructible=_de, container=_co)
@@ -30,7 +30,8 @@ class Player(Entity):
     def update(self):#override this
         pass 
     def take_turn(self): #for this!
-        self.ai.update()
+        if self.ai:
+            self.ai.update()
         
 class Smoke(Entity):
     def __init__(self, x, y, life):
@@ -55,7 +56,7 @@ class Zombie(Entity):
         _at = hit.Attacker(2)
         self.name = 'zombie'
         self.char = 'Z'
-        self.speed = tcod.random_get_int(0, 4, 6)
+        self.speed = 5 #tcod.random_get_int(0, 4, 6)
         
         Entity.__init__(self, x, y, name=self.name, char=self.char, speed=self.speed,
                         attacker=_at, ai=_ai, destructible=_de)

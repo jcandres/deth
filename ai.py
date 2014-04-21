@@ -64,7 +64,7 @@ class AiPlayer(Ai):
             else:
                 game.log("there's nothing of interest here")
             game.game_state = enum.GameS.NEW_TURN #
-            self.owner.action_points -= 30
+            self.owner.action_points -= 100
             
     def choose_from_inventory(self, inventory):
         gui.draw_inventory(0, inventory, "inventory")

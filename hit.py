@@ -5,6 +5,7 @@ import enum
 import game
 import map
 import gui
+import ai
 
 ''' things that hurt and things that can break :'( '''
 
