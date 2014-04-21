@@ -155,6 +155,7 @@ class Game:
         gui.draw_visible(0)
         tcod.console_flush()
         
+        
     def end(self):
         global game_state, turn
         print 'end-func: total turns', turn

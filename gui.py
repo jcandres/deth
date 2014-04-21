@@ -12,6 +12,7 @@ INVENTORY_HEIGHT = 28
 INVENTORY_WIDTH = 40
 
 def draw_inventory(con, inventory, title):
+    con = tcod.console_new(game.GAME_WIDTH, game.GAME_HEIGHT)
     INVENTORY_HEIGHT = len(inventory)+2
     xx = game.GAME_WIDTH/2 - INVENTORY_WIDTH/2
     yy = game.GAME_HEIGHT/2 - INVENTORY_HEIGHT/2
@@ -19,7 +20,10 @@ def draw_inventory(con, inventory, title):
     tcod.console_print_frame(con, xx, yy, INVENTORY_WIDTH, INVENTORY_HEIGHT, fmt=title)
     for i in range(len(inventory)):
         tcod.console_print(con, xx+2, yy+1+i,' %s - %s '  % (chr(ord('a')+i), inventory[i].name))
+        
+    tcod.console_blit(con,0,0,game.GAME_WIDTH,game.GAME_HEIGHT,0,0,0,.5,.25) 
     tcod.console_flush()
+    tcod.console_clear(con)
     
 def draw_directions(con, target):
     #tcod.console_clear(con)
