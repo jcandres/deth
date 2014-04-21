@@ -68,10 +68,9 @@ class Game:
                 sys.exit(0)
                 
     def save_game(self):
-        global game_state, turn, actors, game_log, player, stairs_up, stairs_down
+        global game_state, actors, game_log, player, stairs_up, stairs_down
         file = shelve.open('save', 'n')
         file['game_state'] = game_state
-        file['turn'] = turn
         file['actors'] = actors
         file['player_index'] = actors.index(player)
         file['stairs_u_index'] = actors.index(stairs_up)
@@ -81,10 +80,9 @@ class Game:
         file.close()
         
     def load_game(self):
-        global game_state, turn, actors, game_log, player, stairs_up, stairs_down
+        global game_state, actors, game_log, player, stairs_up, stairs_down
         file = shelve.open('save', 'r')
         game_state = file['game_state']
-        turn = file['turn']
         actors = file['actors']
         player = actors[file['player_index']]
         stairs_up = actors[file['stairs_u_index']]
@@ -96,7 +94,7 @@ class Game:
         map.fov_recompute(player.x, player.y)
         
     def new_game(self):
-        global game_state, turn, actors, game_log, player, stairs_up, stairs_down
+        global game_state, actors, game_log, player, stairs_up, stairs_down
         game_state = enum.GameS.STARTUP
         actors = []
         game_log = []
@@ -113,50 +111,46 @@ class Game:
         map.fov_recompute(player.x, player.y)
         
         game_state = enum.GameS.IDLE
-        turn = 0
         tcod.console_flush()
             
     def loop(self):
-        global game_state, key, turn
+        global game_state, key
         while not tcod.console_is_window_closed():
             if game_state == enum.GameS.NEW_TURN:
                 game_state = enum.GameS.IDLE
             
             key = tcod.console_check_for_keypress(True)
-            if key.vk == tcod.KEY_ESCAPE:
-                self.end()
-            if key.vk == tcod.KEY_F5: #debug-quit
-                break
-            
-            if game_state == enum.GameS.IDLE and (key):
-                player.update()
+            player.take_turn()
+            print player.action_points
                   
             if game_state == enum.GameS.NEW_TURN:
                 player.action_points -= NORMAL_SPEED #for rolling the new turn
                 while player.action_points < 0:
-                    turn+=1
-                    
                     for object in actors:
                         object.action_points += object.speed
                         while object.action_points >= NORMAL_SPEED:
                             object.update()
                             object.action_points -= NORMAL_SPEED
-                    for object in actors:
-                        if object.remove:
-                            actors.remove(object)
                         
-                    if game_state == enum.GameS.DEFEAT:
-                        if os.path.isfile('save'):
-                            os.remove('save')
-                        break
+                for object in actors:
+                    if object.remove:
+                        actors.remove(object)
+                    
+                if game_state == enum.GameS.DEFEAT:
+                    if os.path.isfile('save'):
+                        os.remove('save')
+                    break
                 map.fov_recompute(player.x, player.y)
                 
             draw_all()
-            tcod.console_flush()       
+            tcod.console_flush()
+            if key.vk == tcod.KEY_ESCAPE:
+                self.end()
+            if key.vk == tcod.KEY_F5: #debug-quit
+                break
         
     def end(self):
-        global game_state, turn
-        print 'end-func: total turns', turn
+        global game_state
         if game_state is not enum.GameS.DEFEAT:
             self.save_game()
             print 'end-func: saved!'

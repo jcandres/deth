@@ -38,7 +38,7 @@ class AiPlayer(Ai):
                 game.game_state = enum.GameS.NEW_TURN #
             elif game.player.move(dx, dy):
                 game.game_state = enum.GameS.NEW_TURN #
-    
+        
     def handle_action_key(self, key):
         #inventory
         if key == ord("i"):
@@ -64,6 +64,7 @@ class AiPlayer(Ai):
             else:
                 game.log("there's nothing of interest here")
             game.game_state = enum.GameS.NEW_TURN #
+            self.owner.action_points -= 30
             
     def choose_from_inventory(self, inventory):
         gui.draw_inventory(0, inventory, "inventory")

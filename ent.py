@@ -22,10 +22,15 @@ class Player(Entity):
         _co = item.Container(5)
         self.name = 'you'
         self.char = '@'
-        self.speed = 10
+        self.speed = 30
         
         Entity.__init__(self, x, y, name=self.name, char=self.char, speed=self.speed,
                         attacker=_at, ai=_ai, destructible=_de, container=_co)
+        
+    def update(self):#override this
+        pass 
+    def take_turn(self): #for this!
+        self.ai.update()
         
 class Smoke(Entity):
     def __init__(self, x, y, life):
