@@ -18,7 +18,6 @@ def log(*args):
     messages = textwrap.wrap(line, GAME_WIDTH-2) #divide in several lines if needed
     for l in messages:
         game_log.append(l)
-
    
 def concatenate(*args):
     ls = []
@@ -26,6 +25,18 @@ def concatenate(*args):
         ls.append(str(arg))
     line = ' '.join(ls)
     return line
+
+def draw_all():
+        tcod.console_clear(0)
+        map.draw(0)
+        for object in actors:
+            object.draw(0)
+        for object in actors:
+            if object.blocks:
+                object.draw(0)
+        gui.draw_log(0, 5)
+        gui.draw_hud(0)
+        gui.draw_visible(0)
     
 class Game:
     def init(self): #init tcod & such
@@ -140,26 +151,13 @@ class Game:
                         break
                 map.fov_recompute(player.x, player.y)
                 
-            self.draw_all()
-        
-    def draw_all(self):
-        tcod.console_clear(0)
-        map.draw(0)
-        for object in actors:
-            object.draw(0)
-        for object in actors:
-            if object.blocks:
-                object.draw(0)
-        gui.draw_log(0, 5)
-        gui.draw_hud(0)
-        gui.draw_visible(0)
-        tcod.console_flush()
-        
+            draw_all()
+            tcod.console_flush()       
         
     def end(self):
         global game_state, turn
         print 'end-func: total turns', turn
         if game_state is not enum.GameS.DEFEAT:
             self.save_game()
-            print 'saved!'
+            print 'end-func: saved!'
         self.menu()
