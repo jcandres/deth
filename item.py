@@ -27,7 +27,7 @@ class PotionHeal(Item):
 
 class GrenadeSmoke(Item):
     def __init__(self, x, y):
-        _pi = Explosive(3,1)
+        _pi = ExplosiveThrow(3, 1, 5)
         self.name = 'smoke grenade'
         self.char = 'o'
         self.blocks = False
@@ -50,16 +50,20 @@ class Healer(Pickable):
             game.log('but it has no visible effect!')
             return False
             
-class Explosive(Pickable):
-    def __init__(self, radius, damage):
+class ExplosiveThrow(Pickable):
+    def __init__(self, radius, damage, throw):
         Pickable.__init__(self) 
         self.radius = radius + tcod.random_get_int(0, 0, 5)
         self.damage = damage
+        self.throw = throw
     def use(self, wearer, target):
-        if game.player.ai.choose_direction() is None:
+        d = game.player.ai.choose_direction()
+        if d is None:
             return False
-        for x in range(wearer.x-self.radius, wearer.x+self.radius):
-            for y in range(wearer.y-self.radius, wearer.y+self.radius):
+        target_x = wearer.x + (d[0] * self.throw)
+        target_y = wearer.y + (d[1] * self.throw)
+        for x in range(target_x-self.radius, target_x+self.radius):
+            for y in range(target_y-self.radius, target_y+self.radius):
                 if not map.is_wall(x, y):
                     s = ent.Smoke(x, y, tcod.random_get_int(0, 0, game.NORMAL_SPEED*5))
                     game.actors.append(s)
