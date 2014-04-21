@@ -64,14 +64,13 @@ def draw_log(con, n_lines):
     log_y = game.GAME_HEIGHT - n_lines - 5
     line = []
     while len(game.game_log) < n_lines: #dummy lines at game start
-        game.log('\b')
-        
+        game.game_log.append('\b')
     for i in range(n_lines):
         line.append(game.game_log[len(game.game_log)-i-1])
     
     for i in range(len(line)):
         tcod.console_print(con, 1, log_y + i, line[i])
- 
+
 #draws list of visible entities       
 def draw_visible(con):
     tcod.console_set_default_foreground(con, COL_B)

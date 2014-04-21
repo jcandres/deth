@@ -45,6 +45,7 @@ class AiPlayer(Ai):
             item = self.choose_from_inventory(self.owner.container.inventory)
             if item is not None and item.pickable.use(self.owner, self.owner):
                 game.log('you used a', item.name)
+                game.game_state = enum.GameS.NEW_TURN
         #grab
         elif key == ord("g"):
             self.owner.send_front()

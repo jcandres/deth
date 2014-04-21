@@ -46,7 +46,7 @@ def draw_all():
         for object in actors:
             if object.blocks:
                 object.draw(0)
-        #gui.draw_log(0, 5)
+        gui.draw_log(0, 5)
         gui.draw_hud(0)
         gui.draw_visible(0)
     
