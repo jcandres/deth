@@ -14,10 +14,22 @@ NORMAL_SPEED = 10
 
 
 def log(*args):
-    line = concatenate(*args)
-    messages = textwrap.wrap(line, GAME_WIDTH-2) #divide in several lines if needed
+    global turn_log
+    turn_log += concatenate(*args)+'. '
+    #line = concatenate(*args)
+    #messages = textwrap.wrap(line, GAME_WIDTH-2) #divide in several lines if needed
+    #for l in messages:
+    #    game_log.append(l)
+def log_turn():
+    global turn_log
+    if len(turn_log) <= 1:
+        return False
+    
+    messages = textwrap.wrap(turn_log, GAME_WIDTH-2) #divide in several lines if needed
     for l in messages:
         game_log.append(l)
+    print turn_log
+    turn_log = ''
    
 def concatenate(*args):
     ls = []
@@ -34,15 +46,18 @@ def draw_all():
         for object in actors:
             if object.blocks:
                 object.draw(0)
-        gui.draw_log(0, 5)
+        #gui.draw_log(0, 5)
         gui.draw_hud(0)
         gui.draw_visible(0)
     
 class Game:
     def init(self): #init tcod & such
+        global turn_log
         tcod.console_init_root(GAME_WIDTH,GAME_HEIGHT,'deth')
         tcod.console_set_default_background(0, tcod.darkest_gray)
         tcod.sys_set_fps(15)
+        
+        turn_log = '\b'
         
         self.menu()
         
@@ -142,6 +157,7 @@ class Game:
                     if os.path.isfile('save'):
                         os.remove('save')
                 map.fov_recompute(player.x, player.y)
+                log_turn()
             ### end of turn loop
             
             draw_all()
