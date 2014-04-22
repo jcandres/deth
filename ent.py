@@ -19,7 +19,7 @@ class Player(Entity):
         _ai = ai.AiPlayer()
         _at = hit.Attacker(5)
         _de = hit.DestructiblePlayer(15, 1)
-        _co = item.Container(5)
+        _co = item.Container(15)
         self.name = 'you'
         self.char = '@'
         self.speed = 10

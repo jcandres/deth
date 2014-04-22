@@ -14,9 +14,8 @@ class Pickable(core.Pickable):
 class Container(core.Container):
     pass
 class Equip(core.Equipment):
-    def __init__(self, slot, de=0, po=0, hp=0):
-        core.Equipment.__init__(self, slot=slot,
-                       bonus_def=de, bonus_pow=po, bonus_hp=hp) 
+    def __init__(self, slot, **kw):
+        core.Equipment.__init__(self, slot=slot, **kw) 
 
 
 class Healer(Pickable):

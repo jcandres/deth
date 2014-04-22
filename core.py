@@ -137,6 +137,10 @@ class Pickable:
     def drop(self, wearer):
         if not wearer.container:
             return False
+        if self.owner.equipment and self.owner.equipment.is_equipped:
+            game.log(wearer.name, "can't drop something equipped!")
+            game.log_turn()
+            return False
         game.log(wearer.name, 'dropped a', self.owner.name)
         wearer.container.inventory.remove(self.owner)
         game.actors.append(self.owner)
@@ -147,10 +151,11 @@ class Pickable:
         
 ##### EQUIPABLE
 class Equipment(Object):
-    def __init__(self, slot, bonus_pow=0, bonus_def=0, bonus_hp=0):
-        self.bonus_pow = bonus_pow
-        self.bonus_def = bonus_def
-        self.bonus_hp = bonus_hp
+    def __init__(self, slot, po=0, de=0, hp=0, sp=0):
+        self.bonus_pow = po
+        self.bonus_def = de
+        self.bonus_hp = hp
+        self.bonus_speed = sp
         self.slot = slot
         self.is_equipped = False
     def toggle_equip(self, wearer):

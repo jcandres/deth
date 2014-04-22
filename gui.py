@@ -73,7 +73,6 @@ def draw_hud(con):
         ' | INV: %d' % len(game.player.container.inventory),
         ' | '
         )
-    line += str(game.player.get_all_equipped())
     tcod.console_print_ex(con, 1, game.GAME_HEIGHT-2, tcod.BKGND_ADD, tcod.LEFT, line)    
     return True
 
