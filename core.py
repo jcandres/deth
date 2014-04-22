@@ -29,6 +29,29 @@ class Object:
         self.equipment = equipment
         
         self.init_components()
+    #############################################################################    
+    @property
+    def power(self):
+        if not self.attacker:
+            return 0
+        base = self.attacker.power
+        bonus = sum(item.equipment.bonus_pow for item in self.get_all_equipped())
+        return base + bonus
+    @property
+    def defense(self):
+        if not self.destructible:
+            return 0
+        base = self.destructible.defense
+        bonus = sum(item.equipment.bonus_def for item in self.get_all_equipped())
+        return base + bonus
+    @property
+    def max_hp(self):
+        if not self.destructible:
+            return 0
+        base = self.destructible.max_hp
+        bonus = sum(item.equipment.bonus_hp for item in self.get_all_equipped())
+        return base + bonus
+    ############################################################################
     
     def init_components(self):
         if self.destructible:
@@ -46,7 +69,7 @@ class Object:
             #add a pickable component to all equipable items
             self.pickable = Pickable()
             self.pickable.owner = self
-    
+
     def update(self):
         if self.ai:
             self.ai.update()
@@ -60,7 +83,7 @@ class Object:
         return None
     def get_all_equipped(self):
         if not self.container:
-            return None
+            return []
         equip_list = []
         for obj in self.container.inventory:
             if obj.equipment and obj.equipment.is_equipped:
@@ -190,9 +213,9 @@ class Attacker:
         if target is None:
             return False
         if target.destructible and not target.destructible.is_dead():
-            if self.power > target.destructible.defense:
-                target.destructible.take_damage(self.power)
-                return self.power - target.destructible.defense
+            if self.owner.power > target.defense:
+                target.destructible.take_damage(self.owner.power)
+                return self.owner.power - target.defense
             else:
                 return 0
         else:

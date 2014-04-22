@@ -39,7 +39,8 @@ def draw_equipment(con, inventory, title):
                 tcod.console_set_default_foreground(con, COL_A)
         tcod.console_print(con, xx+2, yy+1+i, line)
     tcod.console_flush()
-    
+
+  
 def draw_directions(con, target):
     game.draw_all()
     tcod.console_set_default_foreground(con, COL_A)
@@ -66,14 +67,14 @@ def draw_hud(con):
     line = game.concatenate(
         #'| HP: %d / %d' % (game.player.destructible.hp, game.player.destructible.max_hp),
         ' | ' + chr(219) * game.player.destructible.hp + chr(224) * (game.player.destructible.max_hp-game.player.destructible.hp),
-        ' | DEF: %d' % game.player.destructible.defense,
-        ' | POW: %d' % game.player.attacker.power,
+        ' | DEF: %d' % game.player.defense,
+        ' | POW: %d' % game.player.power,
         ' | SPD: %d / %d' % (game.player.action_points ,game.player.speed),
         ' | INV: %d' % len(game.player.container.inventory),
         ' | '
         )
-    tcod.console_print_ex(con, 1, game.GAME_HEIGHT-2, tcod.BKGND_ADD, tcod.LEFT, line)
-    
+    line += str(game.player.get_all_equipped())
+    tcod.console_print_ex(con, 1, game.GAME_HEIGHT-2, tcod.BKGND_ADD, tcod.LEFT, line)    
     return True
 
 #extracts n lines and prints on screen

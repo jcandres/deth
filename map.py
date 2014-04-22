@@ -104,8 +104,10 @@ def make_item(x, y):
         it = ent.PotionHeal(x, y)
     elif dice < 50:
         it = ent.GrenadeSmoke(x, y)
+    elif dice < 75:
+        it = ent.HelmetCopper(x, y)
     else:
-        it = ent.Helmet(x, y)
+        it = ent.ShieldWood(x, y)
     game.actors.append(it)
     
 

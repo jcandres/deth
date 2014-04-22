@@ -46,12 +46,19 @@ class Zombie(Entity):
                         attacker=_at, ai=_ai, destructible=_de)
         
 ######################### GAME OBJECTS ###################
-class Helmet(Entity):
+class HelmetCopper(Entity):
     def __init__(self, x, y):
-        self.name = 'generic helmet'
+        self.name = 'copper helmet'
         self.char = '{'
         self.blocks = False
-        _eq = item.Helmet(2)
+        _eq = item.Equip('head', de=2)
+        Entity.__init__(self, x, y, name=self.name, char=self.char, blocks=self.blocks, equipment=_eq)
+class ShieldWood(Entity):
+    def __init__(self, x, y):
+        self.name = 'small wooden shield'
+        self.char = '{'
+        self.blocks = False
+        _eq = item.Equip('left hand', de=1, po=1)
         Entity.__init__(self, x, y, name=self.name, char=self.char, blocks=self.blocks, equipment=_eq)
         
 class PotionHeal(Entity):
