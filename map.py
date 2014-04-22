@@ -3,10 +3,7 @@
 import libtcodpy as tcod
 import math
 import game
-import ent
-import item
-import hit
-import ai
+import ent, item, hit, ai
 
 class Rect:
     def __init__(self, x, y, w, h, number=None):
@@ -104,9 +101,9 @@ def make_monster(x, y):
 def make_item(x, y):
     dice = tcod.random_get_int(0,0,99)
     if dice < 50:
-        it = item.PotionHeal(x, y)
+        it = ent.PotionHeal(x, y)
     else:
-        it = item.GrenadeSmoke(x, y)
+        it = ent.GrenadeSmoke(x, y)
     game.actors.append(it)
     
 

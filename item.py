@@ -13,25 +13,6 @@ class Pickable(core.Pickable):
     pass
 class Container(core.Container):
     pass
-class Item(core.Object):
-    pass
-
-######################### GAME OBJECTS ###################
-class PotionHeal(Item):
-    def __init__(self, x, y):
-        _pi = Healer(10)
-        self.name = 'heal potion'
-        self.char = '!'
-        self.blocks = False
-        Item.__init__(self, x, y, name=self.name, char=self.char, blocks=self.blocks, pickable=_pi)
-
-class GrenadeSmoke(Item):
-    def __init__(self, x, y):
-        _pi = ExplosiveThrow(3, 1, 5)
-        self.name = 'smoke grenade'
-        self.char = 'o'
-        self.blocks = False
-        Item.__init__(self, x, y, name=self.name, char=self.char, blocks=self.blocks, pickable=_pi)
 
 
 ######################### COMPONENTS #####################
@@ -68,8 +49,8 @@ class ExplosiveThrow(Pickable):
                     s = ent.Smoke(x, y, tcod.random_get_int(0, 0, game.NORMAL_SPEED*5))
                     game.actors.append(s)
         map.fov_recompute(game.player.x, game.player.y)
-        game.log("you throw the grenade...")
-        game.log("a really dense gas expands quickly! vision is difficult.")
+        game.log("you throw the grenade..")
+        game.log("a really dense gas expands quickly! vision is difficult")
         if wearer and wearer.container:
             wearer.container.inventory.remove(self.owner)
         return True
