@@ -33,8 +33,10 @@ def draw_equipment(con, inventory, title):
         line =' %s - %s'  % (chr(ord('a')+i), inventory[i].name)
         if inventory[i].equipment:
             if inventory[i].equipment.is_equipped:
+                tcod.console_set_default_foreground(con, tcod.lightest_gray)
                 line += ' ['+inventory[i].equipment.slot+']'
-            tcod.console_set_default_foreground(con, COL_A)
+            else:
+                tcod.console_set_default_foreground(con, COL_A)
         tcod.console_print(con, xx+2, yy+1+i, line)
     tcod.console_flush()
     
@@ -70,7 +72,6 @@ def draw_hud(con):
         ' | INV: %d' % len(game.player.container.inventory),
         ' | '
         )
-        
     tcod.console_print_ex(con, 1, game.GAME_HEIGHT-2, tcod.BKGND_ADD, tcod.LEFT, line)
     
     return True

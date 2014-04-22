@@ -52,19 +52,19 @@ class Object:
             self.ai.update()
         
     def get_equipped_in_slot(self, slot): ############
-        if not self.owner.container:
+        if not self.container:
             return None
         for obj in self.container.inventory:
             if obj.equipment and obj.equipment.slot == slot and obj.equipment.is_equipped:
-                return obj.equipment
+                return obj
         return None
     def get_all_equipped(self):
         if not self.container:
             return None
         equip_list = []
         for obj in self.container.inventory:
-            if obj.equipment and obj.is_equipped:
-                equip_list.append(obj.equipment)
+            if obj.equipment and obj.equipment.is_equipped:
+                equip_list.append(obj)
         return equip_list
     
     def move(self, dx, dy):
@@ -136,9 +136,9 @@ class Equipment(Object):
         else:
             self.equip(wearer)
     def equip(self, wearer):
-        old_equipment = self.get_equipped_in_slot(self.slot)
+        old_equipment = wearer.get_equipped_in_slot(self.slot)
         if old_equipment is not None:
-            old_equipment.dequip()
+            old_equipment.equipment.dequip(wearer)
         self.is_equipped = True
         game.log(wearer.name, 'equipped a', self.owner.name)
         return True
