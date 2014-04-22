@@ -42,7 +42,7 @@ class AiPlayer(Ai):
     def handle_action_key(self, key):
         #inventory
         if key == ord("i"):
-            item = self.choose_from_inventory(self.owner.container.inventory)
+            item = self.choose_from_inventory(self.owner.container.inventory, 'inventory')
             if item is not None:
                 if item.pickable.use_function:
                     if item.pickable.use(self.owner, self.owner):
@@ -50,6 +50,12 @@ class AiPlayer(Ai):
                 else:
                     game.log("that's a silly thing to use")
                     game.log_turn()
+        #inventory
+        if key == ord("d"):
+            item = self.choose_from_inventory(self.owner.container.inventory, 'drop an object')
+            if item is not None:
+                if item.pickable.drop(self.owner):
+                    game.game_state = enum.GameS.NEW_TURN
         #grab
         elif key == ord("g"):
             self.owner.send_front()
@@ -71,8 +77,8 @@ class AiPlayer(Ai):
             game.game_state = enum.GameS.NEW_TURN #
             self.owner.action_points -= 100
             
-    def choose_from_inventory(self, inventory):
-        gui.draw_inventory(0, inventory, "inventory")
+    def choose_from_inventory(self, inventory, title):
+        gui.draw_inventory(0, inventory, title)
         key = tcod.console_wait_for_keypress(True)
         if key.vk == tcod.KEY_CHAR:
             actor_index = key.c - ord('a')

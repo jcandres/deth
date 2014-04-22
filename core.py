@@ -111,6 +111,16 @@ class Pickable:
         return False
     def use(self):
         pass
+    def drop(self, wearer):
+        if not wearer.container:
+            return False
+        game.log(wearer.name, 'dropped a', self.owner.name)
+        wearer.container.inventory.remove(self.owner)
+        game.actors.append(self.owner)
+        self.owner.x = wearer.x
+        self.owner.y = wearer.y
+        return True
+        
         
 ##### EQUIPABLE
 class Equipment(Object):
