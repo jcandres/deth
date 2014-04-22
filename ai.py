@@ -42,20 +42,29 @@ class AiPlayer(Ai):
     def handle_action_key(self, key):
         #inventory
         if key == ord("i"):
-            item = self.choose_from_inventory(self.owner.container.inventory, 'inventory')
+            gui.draw_inventory(0, self.owner.container.inventory, 'inventory')
+            item = self.choose_from_inventory(self.owner.container.inventory)
             if item is not None:
-                if item.pickable.use_function:
-                    if item.pickable.use(self.owner, self.owner):
-                        game.game_state = enum.GameS.NEW_TURN
+                if item.pickable.use(self.owner, self.owner):
+                    game.game_state = enum.GameS.NEW_TURN
                 else:
                     game.log("that's a silly thing to use")
                     game.log_turn()
-        #inventory
+        #drop items
         if key == ord("d"):
-            item = self.choose_from_inventory(self.owner.container.inventory, 'drop an object')
+            gui.draw_inventory(0, self.owner.container.inventory, 'drop an object')
+            item = self.choose_from_inventory(self.owner.container.inventory)
             if item is not None:
                 if item.pickable.drop(self.owner):
                     game.game_state = enum.GameS.NEW_TURN
+        #equip / dequip stuff
+        if key == ord("e"):
+            gui.draw_equipment(0, self.owner.container.inventory, 'equipment')
+            item = self.choose_from_inventory(self.owner.container.inventory)
+            if item is not None and item.equipment:
+                item.equipment.toggle_equip(self.owner)
+                #game.log('ai player - equip', item.name)
+                game.game_state = enum.GameS.NEW_TURN
         #grab
         elif key == ord("g"):
             self.owner.send_front()
@@ -66,6 +75,7 @@ class AiPlayer(Ai):
                     game.game_state = enum.GameS.NEW_TURN #
                 else:
                     game.log("you can't carry more")
+                    game.log_turn()
         #look
         elif key == ord(";"):
             self.owner.send_front() #will be checked the last 
@@ -77,8 +87,8 @@ class AiPlayer(Ai):
             game.game_state = enum.GameS.NEW_TURN #
             self.owner.action_points -= 100
             
-    def choose_from_inventory(self, inventory, title):
-        gui.draw_inventory(0, inventory, title)
+    def choose_from_inventory(self, inventory):
+        #gui.draw_inventory(0, inventory, title)
         key = tcod.console_wait_for_keypress(True)
         if key.vk == tcod.KEY_CHAR:
             actor_index = key.c - ord('a')

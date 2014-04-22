@@ -52,8 +52,8 @@ class Object:
             self.ai.update()
         
     def get_equipped_in_slot(self, slot): ############
-        if not self.container:
-            return False
+        if not self.owner.container:
+            return None
         for obj in self.container.inventory:
             if obj.equipment and obj.equipment.slot == slot and obj.equipment.is_equipped:
                 return obj.equipment
@@ -109,7 +109,7 @@ class Pickable:
             game.actors.remove(self.owner)
             return True
         return False
-    def use(self):
+    def use(self, *args):
         pass
     def drop(self, wearer):
         if not wearer.container:
@@ -130,21 +130,23 @@ class Equipment(Object):
         self.bonus_hp = bonus_hp
         self.slot = slot
         self.is_equipped = False
-    def toggle_equip(self):
+    def toggle_equip(self, wearer):
         if self.is_equipped:
-            self.dequip()
+            self.dequip(wearer)
         else:
-            self.equip()
-    def equip(self):
-        old_equipment = get_equipped_in_slot(self.slot)
+            self.equip(wearer)
+    def equip(self, wearer):
+        old_equipment = self.get_equipped_in_slot(self.slot)
         if old_equipment is not None:
             old_equipment.dequip()
         self.is_equipped = True
-        game.log('eqip', self.owner.name)
-    def dequip(self):
+        game.log(wearer.name, 'equipped a', self.owner.name)
+        return True
+    def dequip(self, wearer):
         if self.is_equipped:
             self.is_equipped = False
-            game.log('ddddddeeqip', self.owner.name)
+            game.log(wearer.name, 'took off a', self.owner.name)
+            return True
         
 ###### DESTRUCTIBLE
 class Destructible:

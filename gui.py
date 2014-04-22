@@ -18,7 +18,24 @@ def draw_inventory(con, inventory, title):
     tcod.console_set_default_foreground(con, COL_A)
     tcod.console_print_frame(con, xx, yy, INVENTORY_WIDTH, INVENTORY_HEIGHT, fmt=title)
     for i in range(len(inventory)):
-        tcod.console_print(con, xx+2, yy+1+i,' %s - %s '  % (chr(ord('a')+i), inventory[i].name))
+        line =' %s - %s'  % (chr(ord('a')+i), inventory[i].name)
+        tcod.console_print(con, xx+2, yy+1+i, line)
+    tcod.console_flush()
+    
+def draw_equipment(con, inventory, title):
+    INVENTORY_HEIGHT = len(inventory)+2
+    xx = game.GAME_WIDTH/2 - INVENTORY_WIDTH/2
+    yy = game.GAME_HEIGHT/2 - INVENTORY_HEIGHT/2
+    tcod.console_set_default_foreground(con, COL_A)
+    tcod.console_print_frame(con, xx, yy, INVENTORY_WIDTH, INVENTORY_HEIGHT, fmt=title)
+    for i in range(len(inventory)):
+        tcod.console_set_default_foreground(con, COL_B)
+        line =' %s - %s'  % (chr(ord('a')+i), inventory[i].name)
+        if inventory[i].equipment:
+            if inventory[i].equipment.is_equipped:
+                line += ' ['+inventory[i].equipment.slot+']'
+            tcod.console_set_default_foreground(con, COL_A)
+        tcod.console_print(con, xx+2, yy+1+i, line)
     tcod.console_flush()
     
 def draw_directions(con, target):
