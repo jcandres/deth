@@ -100,10 +100,12 @@ def make_monster(x, y):
     game.actors.append(m)
 def make_item(x, y):
     dice = tcod.random_get_int(0,0,99)
-    if dice < 50:
+    if dice < 25:
         it = ent.PotionHeal(x, y)
-    else:
+    elif dice < 50:
         it = ent.GrenadeSmoke(x, y)
+    else:
+        it = ent.Helmet(x, y)
     game.actors.append(it)
     
 

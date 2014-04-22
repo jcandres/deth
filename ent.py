@@ -46,6 +46,14 @@ class Zombie(Entity):
                         attacker=_at, ai=_ai, destructible=_de)
         
 ######################### GAME OBJECTS ###################
+class Helmet(Entity):
+    def __init__(self, x, y):
+        self.name = 'generic helmet'
+        self.char = '{'
+        self.blocks = False
+        _eq = item.Helmet(2)
+        Entity.__init__(self, x, y, name=self.name, char=self.char, blocks=self.blocks, equipment=_eq)
+        
 class PotionHeal(Entity):
     def __init__(self, x, y):
         _pi = item.Healer(10)

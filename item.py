@@ -7,15 +7,19 @@ import map
 import gui
 import ent
 
-''' objects, items, scenery '''
+''' components of objects, items, scenery '''
 
 class Pickable(core.Pickable):
     pass
 class Container(core.Container):
     pass
+class Equip(core.Equipment):
+    pass
 
+class Helmet(Equip):
+    def __init__(self, bonus_def, slot='head'):
+        Equip.__init__(self, slot=slot, bonus_def=bonus_def) 
 
-######################### COMPONENTS #####################
 class Healer(Pickable):
     def __init__(self, amount):
         Pickable.__init__(self) 

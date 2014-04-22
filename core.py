@@ -8,8 +8,8 @@ import gui
 
 
 class Object:
-    def __init__(self, x, y, char="?", name="something",color=tcod.lighter_gray, blocks=True,
-                 speed=10, destructible=None, attacker=None, ai=None, pickable=None, container=None):
+    def __init__(self, x, y, char="?", name="something",color=tcod.lighter_gray, blocks=True, speed=10,
+                 destructible=None, attacker=None, ai=None, pickable=None, container=None, equipment=None):
         self.x = x
         self.y = y
         self.char = char
@@ -26,6 +26,8 @@ class Object:
         self.attacker = attacker
         self.pickable = pickable
         self.container = container
+        self.equipment = equipment
+        
         self.init_components()
     
     def init_components(self):
@@ -39,10 +41,31 @@ class Object:
             self.pickable.owner = self
         if self.container:
             self.container.owner = self
+        if self.equipment:
+            self.equipment.owner = self
+            #add a pickable component to all equipable items
+            self.pickable = Pickable()
+            self.pickable.owner = self
     
     def update(self):
         if self.ai:
             self.ai.update()
+        
+    def get_equipped_in_slot(self, slot): ############
+        if not self.container:
+            return False
+        for obj in self.container.inventory:
+            if obj.equipment and obj.equipment.slot == slot and obj.equipment.is_equipped:
+                return obj.equipment
+        return None
+    def get_all_equipped(self):
+        if not self.container:
+            return None
+        equip_list = []
+        for obj in self.container.inventory:
+            if obj.equipment and obj.is_equipped:
+                equip_list.append(obj.equipment)
+        return equip_list
     
     def move(self, dx, dy):
         if map.is_wall(self.x+dx, self.y+dy) or map.is_blocked(self.x+dx, self.y+dy):
@@ -89,8 +112,29 @@ class Pickable:
     def use(self):
         pass
         
-
-
+##### EQUIPABLE
+class Equipment(Object):
+    def __init__(self, slot, bonus_pow=0, bonus_def=0, bonus_hp=0):
+        self.bonus_pow = bonus_pow
+        self.bonus_def = bonus_def
+        self.bonus_hp = bonus_hp
+        self.slot = slot
+        self.is_equipped = False
+    def toggle_equip(self):
+        if self.is_equipped:
+            self.dequip()
+        else:
+            self.equip()
+    def equip(self):
+        old_equipment = get_equipped_in_slot(self.slot)
+        if old_equipment is not None:
+            old_equipment.dequip()
+        self.is_equipped = True
+        game.log('eqip', self.owner.name)
+    def dequip(self):
+        if self.is_equipped:
+            self.is_equipped = False
+            game.log('ddddddeeqip', self.owner.name)
         
 ###### DESTRUCTIBLE
 class Destructible:
