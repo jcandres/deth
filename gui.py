@@ -9,7 +9,7 @@ import map
 COL_A = tcod.lighter_gray
 COL_B = tcod.gray
 INVENTORY_HEIGHT = 28
-INVENTORY_WIDTH = 40
+INVENTORY_WIDTH = 50
 
 def draw_inventory(con, inventory, title):
     INVENTORY_HEIGHT = len(inventory)+2
@@ -19,6 +19,8 @@ def draw_inventory(con, inventory, title):
     tcod.console_print_frame(con, xx, yy, INVENTORY_WIDTH, INVENTORY_HEIGHT, fmt=title)
     for i in range(len(inventory)):
         line =' %s - %s'  % (chr(ord('a')+i), inventory[i].name)
+        if inventory[i].equipment and inventory[i].equipment.is_equipped:
+            line += ' '+ chr(tcod.CHAR_BULLET_SQUARE)
         tcod.console_print(con, xx+2, yy+1+i, line)
     tcod.console_flush()
     
@@ -33,10 +35,9 @@ def draw_equipment(con, inventory, title):
         line =' %s - %s'  % (chr(ord('a')+i), inventory[i].name)
         if inventory[i].equipment:
             if inventory[i].equipment.is_equipped:
-                tcod.console_set_default_foreground(con, tcod.lightest_gray)
                 line += ' ['+inventory[i].equipment.slot+']'
             else:
-                tcod.console_set_default_foreground(con, COL_A)
+                tcod.console_set_default_foreground(con, tcod.lighter_gray)
         tcod.console_print(con, xx+2, yy+1+i, line)
     tcod.console_flush()
 

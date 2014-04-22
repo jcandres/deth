@@ -17,7 +17,6 @@ class Equip(core.Equipment):
     def __init__(self, slot, **kw):
         core.Equipment.__init__(self, slot=slot, **kw) 
 
-
 class Healer(Pickable):
     def __init__(self, amount):
         Pickable.__init__(self) 

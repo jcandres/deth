@@ -31,18 +31,22 @@ class Object:
         self.init_components()
     #############################################################################    
     @property
+    def speed(self):
+        bonus = sum(item.equipment.bonus_sp for item in self.get_all_equipped())
+        return self.speed + bonus
+    @property
     def power(self):
         if not self.attacker:
             return 0
         base = self.attacker.power
-        bonus = sum(item.equipment.bonus_pow for item in self.get_all_equipped())
+        bonus = sum(item.equipment.bonus_po for item in self.get_all_equipped())
         return base + bonus
     @property
     def defense(self):
         if not self.destructible:
             return 0
         base = self.destructible.defense
-        bonus = sum(item.equipment.bonus_def for item in self.get_all_equipped())
+        bonus = sum(item.equipment.bonus_de for item in self.get_all_equipped())
         return base + bonus
     @property
     def max_hp(self):
@@ -152,10 +156,10 @@ class Pickable:
 ##### EQUIPABLE
 class Equipment(Object):
     def __init__(self, slot, po=0, de=0, hp=0, sp=0):
-        self.bonus_pow = po
-        self.bonus_def = de
+        self.bonus_po = po
+        self.bonus_de = de
         self.bonus_hp = hp
-        self.bonus_speed = sp
+        self.bonus_sd = sp
         self.slot = slot
         self.is_equipped = False
     def toggle_equip(self, wearer):
