@@ -47,8 +47,8 @@ class Healer(Pickable):
             game.log('the', self.owner.name, 'heals', target.name, 'by', a, 'hp')
             return True
         else:
-            game.log('but it has no visible effect!')
-            return False
+            game.log('the', self.owner.name, 'has no visible effect!')
+            return True
             
 class ExplosiveThrow(Pickable):
     def __init__(self, radius, damage, throw):

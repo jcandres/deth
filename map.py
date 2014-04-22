@@ -154,6 +154,8 @@ def set_wall(x, y, solid=True, visible=True):
 
 ## utils and shit ##
 def is_wall(x,y):
+    if not is_in_bounds(x, y):
+        return False
     return map[x][y].blocked
 
 def is_blocked(x, y):

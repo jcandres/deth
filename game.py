@@ -60,7 +60,7 @@ class Game:
         self.menu()
         
     def menu(self): #new gam or load
-        print 'has save game:', os.path.isfile('save')
+        print 'menu: has save game:', os.path.isfile('save')
         while not tcod.console_is_window_closed():
             gui.draw_main_menu(0)
             key = tcod.console_check_for_keypress(True)
@@ -72,12 +72,12 @@ class Game:
                     self.load_game()
                     break
                 except:
-                    print 'no saved gam'
+                    print 'menu: no saved gam'
             elif key.c == ord('d'):
                 os.remove('save')
-                print 'deleted save game'
+                print 'menu: deleted save game'
             elif key.vk == tcod.KEY_ESCAPE:
-                print 'quit...'
+                print 'menu: quit...'
                 sys.exit(0)
                 
             
