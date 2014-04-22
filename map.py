@@ -103,7 +103,7 @@ def make_item(x, y):
     if dice < 25:
         it = ent.PotionHeal(x, y)
     elif dice < 50:
-        it = ent.GrenadeSmoke(x, y)
+        it = ent.Slingshot(x, y)
     elif dice < 75:
         it = ent.HelmetCopper(x, y)
     else:

@@ -55,6 +55,33 @@ class ExplosiveThrow(Pickable):
         if wearer and wearer.container:
             wearer.container.inventory.remove(self.owner)
         return True
+    
+class SlingshotThrow(Pickable):
+    def __init__(self, length, damage):
+        Pickable.__init__(self) 
+        self.length = length
+        self.damage = damage
+    def use(self, wearer, target):
+        d = game.player.ai.choose_direction()
+        if d is None:
+            return False
+        
+        dist = self.length + wearer.power / 3
+        x =  wearer.x + d[0]
+        y =  wearer.y + d[1]
+        while dist:
+            dist -= 1
+            x += d[0]
+            y += d[1]
+            if map.get_actor_alive(x, y):
+                dist = 0
+            elif map.is_blocked(x, y):
+                dist = 0
+                x -= d[0]
+                y -= d[1]
+        p = ent.Projectile(x, y, self.damage, wearer)
+        game.actors.append(p)
+        return True
         
             
 

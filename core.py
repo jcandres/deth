@@ -14,6 +14,7 @@ class Object:
         self.y = y
         self.char = char
         self.name = name
+        self.init_name = name
         self.color = color
         self.blocks = blocks
                 
@@ -204,6 +205,7 @@ class Destructible:
     def die(self):
         self.owner.char = "%"
         if self.corpse_name:
+            self.owner.init_name = self.owner.name
             self.owner.name = self.corpse_name
         self.owner.color = tcod.dark_red
         self.owner.blocks = False
@@ -227,8 +229,17 @@ class Attacker:
                 return self.owner.power - target.defense
             else:
                 return 0
-        else:
-            return None
+        return None
+    def attack_tile(self, x, y):
+        target = map.get_actor_alive(x, y)
+        if target:
+            if self.owner.power > target.defense:
+                target.destructible.take_damage(self.owner.power)
+                #return self.owner.power - target.defense
+                return target
+            else:
+                return False
+        return None
 
 ###### AI
 class Ai:

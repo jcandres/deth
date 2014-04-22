@@ -24,3 +24,4 @@ class DestructiblePlayer(Destructible):
         self.owner.blocks = False
         self.owner.ai = None
         game.game_state = enum.GameS.DEFEAT
+        
