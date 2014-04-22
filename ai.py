@@ -34,7 +34,7 @@ class AiPlayer(Ai):
                 self.owner.attacker.attack(e)
                 game.log(self.owner.name, 'hit the', nam)
                 if e.destructible.is_dead():
-                    game.log(self.owner.name, 'killed the', nam)
+                    game.log(self.owner.name, 'killed the', nam+'!')
                 game.game_state = enum.GameS.NEW_TURN #
             elif game.player.move(dx, dy):
                 game.game_state = enum.GameS.NEW_TURN #
@@ -44,7 +44,6 @@ class AiPlayer(Ai):
         if key == ord("i"):
             item = self.choose_from_inventory(self.owner.container.inventory)
             if item is not None and item.pickable.use(self.owner, self.owner):
-                game.log('you used a', item.name)
                 game.game_state = enum.GameS.NEW_TURN
         #grab
         elif key == ord("g"):

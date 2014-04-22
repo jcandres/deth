@@ -16,10 +16,8 @@ NORMAL_SPEED = 10
 def log(*args):
     global turn_log
     turn_log += concatenate(*args)+'. '
-    #line = concatenate(*args)
-    #messages = textwrap.wrap(line, GAME_WIDTH-2) #divide in several lines if needed
-    #for l in messages:
-    #    game_log.append(l)
+    #turn_log = concatenate(*args)+'. ' + turn_log
+    
 def log_turn():
     global turn_log
     if len(turn_log) <= 1:
@@ -28,12 +26,12 @@ def log_turn():
     messages = textwrap.wrap(turn_log, GAME_WIDTH-2) #divide in several lines if needed
     for l in messages:
         game_log.append(l)
-    print turn_log
     turn_log = ''
    
 def concatenate(*args):
     ls = []
     for arg in args:
+        #ls.append(str(arg))
         ls.append(str(arg))
     line = ' '.join(ls)
     return line
@@ -82,52 +80,6 @@ class Game:
                 print 'quit...'
                 sys.exit(0)
                 
-    def save_game(self):
-        global game_state, actors, game_log, player, stairs_up, stairs_down
-        file = shelve.open('save', 'n')
-        file['game_state'] = game_state
-        file['actors'] = actors
-        file['player_index'] = actors.index(player)
-        file['stairs_u_index'] = actors.index(stairs_up)
-        file['stairs_d_index'] = actors.index(stairs_down)
-        file['game_log'] = game_log
-        file['map'] = map.map
-        file.close()
-        
-    def load_game(self):
-        global game_state, actors, game_log, player, stairs_up, stairs_down
-        file = shelve.open('save', 'r')
-        game_state = file['game_state']
-        actors = file['actors']
-        player = actors[file['player_index']]
-        stairs_up = actors[file['stairs_u_index']]
-        stairs_down = actors[file['stairs_d_index']]
-        game_log = file['game_log']
-        map.map = file['map']
-        file.close()
-        map.fov_init()
-        map.fov_recompute(player.x, player.y)
-        
-    def new_game(self):
-        global game_state, actors, game_log, player, stairs_up, stairs_down
-        game_state = enum.GameS.STARTUP
-        actors = []
-        game_log = []
-        
-        player = ent.Player(0,0)
-        stairs_up = ent.Entity(1,2,"<", "upward staircase", blocks=False)
-        stairs_down = ent.Entity(1,2,">", "downward staircase", blocks=False)
-        
-        actors.append(stairs_up)
-        actors.append(stairs_down)
-        actors.append(player)
-        
-        map.make_map()
-        map.fov_recompute(player.x, player.y)
-        
-        game_state = enum.GameS.IDLE
-        tcod.console_flush()
-
             
     def loop(self):
         global game_state, key
@@ -173,3 +125,49 @@ class Game:
             self.save_game()
             print 'end-func: saved!'
         self.menu()
+        
+    def save_game(self):
+        global game_state, actors, game_log, player, stairs_up, stairs_down
+        file = shelve.open('save', 'n')
+        file['game_state'] = game_state
+        file['actors'] = actors
+        file['player_index'] = actors.index(player)
+        file['stairs_u_index'] = actors.index(stairs_up)
+        file['stairs_d_index'] = actors.index(stairs_down)
+        file['game_log'] = game_log
+        file['map'] = map.map
+        file.close()
+        
+    def load_game(self):
+        global game_state, actors, game_log, player, stairs_up, stairs_down
+        file = shelve.open('save', 'r')
+        game_state = file['game_state']
+        actors = file['actors']
+        player = actors[file['player_index']]
+        stairs_up = actors[file['stairs_u_index']]
+        stairs_down = actors[file['stairs_d_index']]
+        game_log = file['game_log']
+        map.map = file['map']
+        file.close()
+        map.fov_init()
+        map.fov_recompute(player.x, player.y)
+        
+    def new_game(self):
+        global game_state, actors, game_log, player, stairs_up, stairs_down
+        game_state = enum.GameS.STARTUP
+        actors = []
+        game_log = []
+        
+        player = ent.Player(0,0)
+        stairs_up = ent.Entity(1,2,"<", "upward staircase", blocks=False)
+        stairs_down = ent.Entity(1,2,">", "downward staircase", blocks=False)
+        
+        actors.append(stairs_up)
+        actors.append(stairs_down)
+        actors.append(player)
+        
+        map.make_map()
+        map.fov_recompute(player.x, player.y)
+        
+        game_state = enum.GameS.IDLE
+        tcod.console_flush()

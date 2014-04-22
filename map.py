@@ -163,6 +163,8 @@ def is_blocked(x, y):
         if object.x==x and object.y==y and object.blocks:
             return True
     return False
+def is_in_bounds(x, y):
+    return x > 0 and y > 0 and x < MAP_WIDTH and y < MAP_HEIGHT
 
 def get_actor(x, y):
     for object in game.actors:

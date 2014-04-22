@@ -114,7 +114,6 @@ class Destructible:
             self.hp = self.max_hp
         return amount
     def die(self):
-        game.log(self.owner.name,'died')
         self.owner.char = "%"
         if self.corpse_name:
             self.owner.name = self.corpse_name

@@ -44,7 +44,7 @@ class Healer(Pickable):
             wearer.container.inventory.remove(self.owner)
         a = target.destructible.heal(self.amount)
         if a > 0:
-            game.log(target.name, 'heals by', a, 'hp')
+            game.log('the', self.owner.name, 'heals', target.name, 'by', a, 'hp')
             return True
         else:
             game.log('but it has no visible effect!')
@@ -68,9 +68,11 @@ class ExplosiveThrow(Pickable):
                     s = ent.Smoke(x, y, tcod.random_get_int(0, 0, game.NORMAL_SPEED*5))
                     game.actors.append(s)
         map.fov_recompute(game.player.x, game.player.y)
+        game.log("you throw the grenade...")
         game.log("a really dense gas expands quickly! vision is difficult.")
         if wearer and wearer.container:
             wearer.container.inventory.remove(self.owner)
+        return True
         
             
 

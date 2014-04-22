@@ -61,15 +61,14 @@ def draw_hud(con):
 #extracts n lines and prints on screen
 def draw_log(con, n_lines):
     tcod.console_set_default_foreground(con, COL_A)
-    log_y = game.GAME_HEIGHT - n_lines - 5
-    line = []
+    log_y = game.GAME_HEIGHT - n_lines - 1
     while len(game.game_log) < n_lines: #dummy lines at game start
         game.game_log.append('\b')
+
     for i in range(n_lines):
-        line.append(game.game_log[len(game.game_log)-i-1])
-    
-    for i in range(len(line)):
-        tcod.console_print(con, 1, log_y + i, line[i])
+        c = (i-(i*30)-50)
+        tcod.console_set_default_foreground(con, tcod.Color(c, c, c))
+        tcod.console_print(con, 1, log_y - i, game.game_log[len(game.game_log)-1-i])
 
 #draws list of visible entities       
 def draw_visible(con):
