@@ -5,3 +5,5 @@
 *.exe
 save
 *.save
+/.gitignore~
+*.s

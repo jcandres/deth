@@ -77,6 +77,7 @@ class Game:
                     print 'menu: no saved gam'
             elif key.c == ord('d'):
                 os.remove('save')
+                self.clean_stored_maps()
                 print 'menu: deleted save game'
             elif key.vk == tcod.KEY_ESCAPE:
                 print 'menu: quit...'
@@ -117,6 +118,7 @@ class Game:
             if game_state == enum.GameS.DEFEAT:
                 if os.path.isfile('save'):
                     os.remove('save')
+                self.clean_stored_maps()
             ### end of turn loop
             
             draw_all()
@@ -135,18 +137,25 @@ class Game:
     
     def change_floor(self, amount):
         global game_state, level, actors, game_log, player, stairs_up, stairs_down
+        self.store_map()
+        
         level = level + amount
         
         actors = []
         actors.append(player)
         actors.append(stairs_up)
         actors.append(stairs_down)
-        map.make_map()
+        
+        if not os.path.isfile('l'+str(level)+'.s'): #if new floor is new, make it
+            map.make_map()
+        else:
+            self.restore_map() #else load it
+        
         if amount > 0: #down
             player.x = stairs_up.x
             player.y = stairs_up.y
         else:
-            player.x = stairs_down.x ############## save each map as a file  --- load them back
+            player.x = stairs_down.x
             player.y = stairs_down.y
         log("you are now at floor", level)
         log_turn()
@@ -154,9 +163,9 @@ class Game:
         game_state = enum.GameS.IDLE
         tcod.console_flush()
     
-    def save_game(self):
+    def save_game(self, file_name='save'):
         global game_state, actors, game_log, player, stairs_up, stairs_down, level
-        file = shelve.open('save', 'n')
+        file = shelve.open(file_name, 'n')
         file['game_state'] = game_state
         file['actors'] = actors
         file['level'] = level
@@ -167,9 +176,9 @@ class Game:
         file['map'] = map.map
         file.close()
   
-    def load_game(self):
+    def load_game(self, file_name='save'):
         global game_state, actors, game_log, player, stairs_up, stairs_down, level
-        file = shelve.open('save', 'r')
+        file = shelve.open(file_name, 'r')
         game_state = file['game_state']
         level = file['level']
         actors = file['actors']
@@ -184,6 +193,7 @@ class Game:
         
     def new_game(self):
         global game_state, actors, game_log, player, stairs_up, stairs_down, level
+        self.clean_stored_maps()
         game_state = enum.GameS.STARTUP
         actors = []
         game_log = []
@@ -203,3 +213,26 @@ class Game:
         stairs_up.x, stairs_up.y = (-1, -1)
         game_state = enum.GameS.IDLE
         tcod.console_flush()
+    
+    def store_map(self):
+        global level
+        self.save_game('l'+str(level)+'.s')
+    def restore_map(self):
+        global level, actors, player
+        o_player = player
+        self.load_game('l'+str(level)+'.s')
+        actors.remove(player)
+        player = o_player
+        actors.append(player)
+    def clean_stored_maps(self):
+        for i in range(50):
+            if os.path.isfile('l'+str(i)+'.s'):
+                os.remove('l'+str(i)+'.s')
+        
+
+
+
+
+
+
+

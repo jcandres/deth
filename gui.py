@@ -104,11 +104,9 @@ def draw_main_menu(con):
     img = tcod.image_load('small.png')
     tcod.image_set_key_color(img, tcod.red)
     tcod.image_blit(img, 0, 45, 30,  tcod.BKGND_LIGHTEN, .5, .25, 0)
-    #tcod.image_blit_2x(img, 0, 0, 0)
     
     xx=-20
     yy=15
-    
     options=(
              """
              GAME TITLE """+chr(tcod.CHAR_BLOCK2)+chr(tcod.CHAR_BLOCK1)+chr(tcod.CHAR_BLOCK1)+"""
