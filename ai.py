@@ -126,9 +126,8 @@ class AiZombie(Ai):
     def update(self):
         if map.is_fov(self.owner.x, self.owner.y):
             self.move_count = self.tracking_turns
-        else:
-            self.move_count -= 1
         if self.move_count:
+            self.move_count -= 1
             self.seek_and_destroy(game.player)
             
     def seek_and_destroy(self, target):

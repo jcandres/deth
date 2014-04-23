@@ -42,10 +42,10 @@ LIGHT_RADIUS = 7
 map = [[Tile(True)
         for y in range(MAP_HEIGHT) ]
             for x in range(MAP_WIDTH) ]
+fov_map = tcod.map_new(MAP_WIDTH, MAP_HEIGHT)
 leafs = []
 rooms = []
 doors = []
-fov_map = tcod.map_new(MAP_WIDTH, MAP_HEIGHT)
 
 ##population
 def populate():
@@ -75,6 +75,14 @@ def populate():
 
 ## generation ##
 def make_map():
+    global map, leafs, rooms, doors
+    map = [[Tile(True)
+        for y in range(MAP_HEIGHT) ]
+            for x in range(MAP_WIDTH) ]
+    leafs = []
+    rooms = []
+    doors = []
+    fov_map = tcod.map_new(MAP_WIDTH, MAP_HEIGHT)
     bsp = tcod.bsp_new_with_size(2, 2, MAP_WIDTH-3, MAP_HEIGHT-3)
     tcod.bsp_split_recursive(bsp, 0, 4 , MIN_LEAF_SIZE, MAX_LEAF_SIZE, 1.5, 1.5)
     tcod.bsp_traverse_inverted_level_order(bsp, bsp_callback)
@@ -208,7 +216,15 @@ def is_fov(x, y):
     return tcod.map_is_in_fov(fov_map, x, y)
 
 
-        
+def draw_no_fov(con):
+    tcod.console_set_default_foreground(con, tcod.gray)
+    for x in range(MAP_WIDTH):
+        for y in range(MAP_HEIGHT):
+            wall = map[x][y].block_sight
+            if wall:
+                tcod.console_put_char(con, x, y, "#")
+            else:
+                tcod.console_put_char(con, x, y, ".")
         
 def draw(con):
     #global map

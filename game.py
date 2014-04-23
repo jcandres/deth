@@ -39,11 +39,14 @@ def concatenate(*args):
 def draw_all():
         tcod.console_clear(0)
         map.draw(0)
+        map.draw_no_fov(0)
         for object in actors:
             object.draw(0)
+            object.draw_no_fov(0)
         for object in actors:
             if object.blocks:
                 object.draw(0)
+                object.draw_no_fov(0)
         gui.draw_log(0, 5)
         gui.draw_hud(0)
         gui.draw_visible(0)
@@ -125,6 +128,7 @@ class Game:
             self.save_game()
             print 'end-func: saved!'
         self.menu()
+        
         
     def save_game(self):
         global game_state, actors, game_log, player, stairs_up, stairs_down

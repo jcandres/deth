@@ -107,6 +107,9 @@ class Object:
         if map.is_fov(self.x, self.y):
             tcod.console_set_default_foreground(con, self.color)
             tcod.console_put_char(con, self.x, self.y, self.char, tcod.BKGND_NONE)
+    def draw_no_fov(self, con):
+        tcod.console_set_default_foreground(con, self.color)
+        tcod.console_put_char(con, self.x, self.y, self.char, tcod.BKGND_NONE)
         
     def send_back(self):
         game.actors.remove(self)
