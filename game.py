@@ -103,8 +103,8 @@ class Game:
                             object.action_points -= NORMAL_SPEED
                     player.action_points += player.speed
                 
-                ol = [] #make empty list, fill it with alive entities, etc
-                ol[:] = [object for object in actors if not object.remove]
+                #refresh actors removing dead things
+                ol = [object for object in actors if not object.remove]
                 actors = ol
                     
                 if game_state == enum.GameS.DEFEAT:

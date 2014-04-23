@@ -82,16 +82,22 @@ class ExplosiveThrow(Pickable):
         game.log_turn()
         game.log('BOOOM!!')
         game.log_turn()
-        for x in range(target_x-self.radius, target_x+self.radius):
-            for y in range(target_y-self.radius, target_y+self.radius):
+        did_hole = False
+        for x in range(target_x-self.radius+1, target_x+self.radius):
+            for y in range(target_y-self.radius+1, target_y+self.radius):
+                if map.is_diggable(x, y):
+                    map.set_wall(x, y, False, False)
+                    did_hole = True
                 if not map.is_wall(x, y):
                     if map.get_distance_coord(target_x, target_y, x, y) < self.radius:
+                        s = ent.Smoke(x, y, tcod.random_get_int(0, 0, game.NORMAL_SPEED*5),
+                                      was_visible=not map.is_wall(x,y))
+                        game.actors.append(s)
                         s = ent.Projectile(x, y, self.damage, wearer, name='explosion', self_remove=True)
                         game.actors.append(s)
-                        s = ent.Smoke(x, y, tcod.random_get_int(0, 0, game.NORMAL_SPEED*5))
-                        game.actors.append(s)
-                        if map.is_diggable(x, y):
-                            map.set_wall(x, y, False, False)
+                        
+        if did_hole:
+            game.log("the", self.owner.name, 'made a huge hole in the walls!')
         map.fov_recompute(game.player.x, game.player.y)
         if wearer and wearer.container:
             wearer.container.inventory.remove(self.owner)
@@ -110,8 +116,8 @@ class SmokeThrow(Pickable):
             return False
         target_x = wearer.x + (d[0] * self.throw)
         target_y = wearer.y + (d[1] * self.throw)
-        for x in range(target_x-self.radius, target_x+self.radius):
-            for y in range(target_y-self.radius, target_y+self.radius):
+        for x in range(target_x-self.radius+1, target_x+self.radius):
+            for y in range(target_y-self.radius+1, target_y+self.radius):
                 if not map.is_wall(x, y) and map.get_distance_coord(target_x, target_y, x, y) < self.radius:
                     s = ent.Smoke(x, y, tcod.random_get_int(0, 0, game.NORMAL_SPEED*5))
                     game.actors.append(s)

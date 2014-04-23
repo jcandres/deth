@@ -27,7 +27,7 @@ class Player(Entity):
         
         Entity.__init__(self, x, y, name=self.name, char=self.char, speed=self.speed,
                         attacker=_at, ai=_ai, destructible=_de, container=_co)
-        self.sense_objects = False #outside fov
+        self.sense_objects = True #outside fov
         self.sense_entities = False #outside fov
         self.sense_map = False #this means you can't see smoke!
         self.blind = False #can see characters of the things
@@ -89,8 +89,9 @@ class Grenade(Entity):
         
 # random junk and stuff #
 class Smoke(Entity):
-    def __init__(self, x, y, life):
+    def __init__(self, x, y, life, was_visible=True):
         self.life = life
+        self.was_visible = was_visible
         Entity.__init__(self, x, y, name='smoke', char=chr(tcod.CHAR_BLOCK2), blocks=False)
         if not map.is_wall(self.x, self.y):
             map.fov_set(self.x, self.y, visible=False, blocked=map.is_wall(self.x, self.y))
@@ -99,7 +100,8 @@ class Smoke(Entity):
         self.life -= 1
         if self.life <= 0:
             self.remove = True
-            map.fov_set(self.x, self.y, visible=True, blocked=map.is_wall(self.x, self.y))
+            map.fov_set(self.x, self.y, visible=self.was_visible, blocked=False)
+            #map.fov_init()
 
 class Projectile(Entity):
     def __init__(self, x, y, power, wearer=None, name=None, self_remove=False):
