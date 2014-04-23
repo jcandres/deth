@@ -228,20 +228,21 @@ def fov_recompute(x, y):
 def is_fov(x, y):
     return tcod.map_is_in_fov(fov_map, x, y)
 
-
-def draw_no_fov(con):
-    tcod.console_set_default_foreground(con, tcod.gray)
-    for x in range(MAP_WIDTH):
-        for y in range(MAP_HEIGHT):
-            wall = map[x][y].block_sight
-            if wall:
-                tcod.console_put_char(con, x, y, "#")
-            else:
-                tcod.console_put_char(con, x, y, ".")
         
-def draw(con):
+def draw(con, skip_fov=False):
     #global map
     tcod.console_set_default_foreground(con, tcod.gray)
+    
+    if skip_fov:
+        for x in range(MAP_WIDTH):
+            for y in range(MAP_HEIGHT):
+                wall = map[x][y].block_sight
+                if wall:
+                    tcod.console_put_char(con, x, y, "#")
+                else:
+                    tcod.console_put_char(con, x, y, ".")
+        return True
+    
     for x in range(MAP_WIDTH):
         for y in range(MAP_HEIGHT):
             wall = map[x][y].block_sight

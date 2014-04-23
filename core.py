@@ -9,15 +9,18 @@ import gui
 
 class Object:
     def __init__(self, x, y, char="?", name="something",color=tcod.lighter_gray, blocks=True, speed=10,
+                 invisible=False, material=None,
                  destructible=None, attacker=None, ai=None, pickable=None, container=None, equipment=None):
         self.x = x
         self.y = y
         self.char = char
-        self.name = name
+        self._name = name
         self.init_name = name
         self.color = color
         self.blocks = blocks
-                
+        self.invisible = invisible
+        self.material = material
+        
         self.speed = speed
         self.action_points = tcod.random_get_int(0,0,speed)
         self.remove = False
@@ -30,7 +33,15 @@ class Object:
         self.equipment = equipment
         
         self.init_components()
-    #############################################################################    
+    #############################################################################
+    @property
+    def name(self):
+        n=[]
+        if self.destructible and self.destructible.is_dead(): n.append('dead')
+        if self.invisible: n.append('invisible')
+        if self.material: n.append(self.material)
+        n.append(self._name)
+        return ' '.join(n)
     @property
     def speed(self):
         bonus = sum(item.equipment.bonus_sp for item in self.get_all_equipped())
@@ -78,8 +89,25 @@ class Object:
     def update(self):
         if self.ai:
             self.ai.update()
+            
+    def draw(self, con, skip_fov=False, no_char=False):
+        '''skip_fov: means seeing with TEH MIND! - also makes invisible display as <space>
+        no_char: means that the player can 'sense', but not see clearly - aka blinded'''
+        tcod.console_set_default_foreground(con, self.color)
+        ch = self.char
         
-    def get_equipped_in_slot(self, slot): ############
+        if self.invisible and not skip_fov:
+            return False
+        if no_char:
+            ch = ' '
+        if skip_fov:
+            tcod.console_put_char(con, self.x, self.y, ch, tcod.BKGND_NONE)
+            return True
+        if map.is_fov(self.x, self.y):
+            tcod.console_put_char(con, self.x, self.y, ch, tcod.BKGND_NONE)
+            
+        
+    def get_equipped_in_slot(self, slot): 
         if not self.container:
             return None
         for obj in self.container.inventory:
@@ -102,14 +130,6 @@ class Object:
             self.x += dx
             self.y += dy
             return True
-    
-    def draw(self, con):
-        if map.is_fov(self.x, self.y):
-            tcod.console_set_default_foreground(con, self.color)
-            tcod.console_put_char(con, self.x, self.y, self.char, tcod.BKGND_NONE)
-    def draw_no_fov(self, con):
-        tcod.console_set_default_foreground(con, self.color)
-        tcod.console_put_char(con, self.x, self.y, self.char, tcod.BKGND_NONE)
         
     def send_back(self):
         game.actors.remove(self)
@@ -207,9 +227,6 @@ class Destructible:
         return amount
     def die(self):
         self.owner.char = "%"
-        if self.corpse_name:
-            self.owner.init_name = self.owner.name
-            self.owner.name = self.corpse_name
         self.owner.color = tcod.dark_red
         self.owner.blocks = False
         self.owner.send_back()

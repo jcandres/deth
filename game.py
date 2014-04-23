@@ -39,14 +39,14 @@ def concatenate(*args):
 def draw_all():
         tcod.console_clear(0)
         map.draw(0)
-        map.draw_no_fov(0)
         for object in actors:
-            object.draw(0)
-            object.draw_no_fov(0)
+            if not object.blocks:
+                object.draw(0, skip_fov=player.sense_objects,
+                        no_char=(player.blind and not player.sense_objects))
         for object in actors:
             if object.blocks:
-                object.draw(0)
-                object.draw_no_fov(0)
+                object.draw(0, skip_fov=player.sense_entities,
+                            no_char=(player.blind and not player.sense_entities))
         gui.draw_log(0, 5)
         gui.draw_hud(0)
         gui.draw_visible(0)

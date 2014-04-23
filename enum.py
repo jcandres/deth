@@ -12,3 +12,12 @@ class dir:
     DOWN = [0, +1]
     RIGHT = [1, 0]
     LEFT = [-1, 0]
+
+class mat:
+    STONE = 'stone'
+    FLESH = 'flesh'
+    GAS = 'gaseous'
+    METAL = 'metallic'
+    JELLY = 'gelatinous'
+    VEGETAL = 'vegetal'
+    WOOD = 'wooden'

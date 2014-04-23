@@ -26,6 +26,9 @@ class Player(Entity):
         
         Entity.__init__(self, x, y, name=self.name, char=self.char, speed=self.speed,
                         attacker=_at, ai=_ai, destructible=_de, container=_co)
+        self.sense_objects = False #outside fov
+        self.sense_entities = False #outside fov
+        self.blind = False #can see characters of the things
         
     def update(self):#override this
         pass 
@@ -38,11 +41,8 @@ class Zombie(Entity):
         _ai = ai.AiZombie()
         _de = hit.DestructibleMonster(10, 1, corpse_name="zombie body")
         _at = hit.Attacker(2)
-        self.name = 'zombie'
-        self.char = 'Z'
-        self.speed = 5 #tcod.random_get_int(0, 4, 6)
-        
-        Entity.__init__(self, x, y, name=self.name, char=self.char, speed=self.speed,
+        self.speed = tcod.random_get_int(0, 4, 6)
+        Entity.__init__(self, x, y, name='zombie', char='Z', speed=self.speed,
                         attacker=_at, ai=_ai, destructible=_de)
         
 ######################### GAME OBJECTS ###################
@@ -58,7 +58,8 @@ class HelmetCopper(Entity):
 class ShieldWood(Entity):
     def __init__(self, x, y):
         _eq = item.Equip('left hand', de=1, po=1)
-        Entity.__init__(self, x, y, name='small wooden shield', char='{', blocks=False, equipment=_eq)
+        Entity.__init__(self, x, y, name='small shield', material=enum.mat.WOOD, char='{',
+                        blocks=False, equipment=_eq)
         
 class PotionHeal(Entity):
     def __init__(self, x, y):
