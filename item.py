@@ -31,6 +31,28 @@ class Healer(Pickable):
         else:
             game.log('the', self.owner.name, 'has no visible effect!')
             return True
+        
+class Digger(Pickable):
+    def use(self, wearer, target):
+        if not wearer.ai:
+            return False
+        d = wearer.ai.choose_direction()
+        if d is None:
+            return False
+        
+        dx =  wearer.x + d[0]
+        dy =  wearer.y + d[1]
+        if map.is_wall(dx, dy):
+            if map.is_diggable(dx, dy):
+                map.set_wall(dx, dy, False, False)
+                game.log('with great effort,', wearer.name, 'dig into the solid rock')
+                wearer.action_points -= game.NORMAL_SPEED*10
+            else:
+                game.log('this rock is too hard for', wearer.name, 'to dig..')
+        else:
+            game.log(wearer.name, "can't dig here")
+        return True
+        
             
 class ExplosiveThrow(Pickable):
     def __init__(self, radius, damage, throw):
@@ -62,7 +84,9 @@ class SlingshotThrow(Pickable):
         self.length = length
         self.damage = damage
     def use(self, wearer, target):
-        d = game.player.ai.choose_direction()
+        if not wearer.ai:
+            return False
+        d = wearer.ai.choose_direction()
         if d is None:
             return False
         

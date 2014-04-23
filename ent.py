@@ -46,6 +46,10 @@ class Zombie(Entity):
                         attacker=_at, ai=_ai, destructible=_de)
         
 ######################### GAME OBJECTS ###################
+class Shovel(Entity):
+    def __init__(self, x, y):
+        _pi = item.Digger(10)
+        Entity.__init__(self, x, y, name='shovel', char='s', blocks=False, pickable=_pi)
 class HelmetCopper(Entity):
     def __init__(self, x, y):
         _eq = item.Equip('head', de=2)

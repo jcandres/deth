@@ -122,7 +122,7 @@ def make_item(x, y):
     elif dice < 50:
         it = ent.Slingshot(x, y)
     elif dice < 75:
-        it = ent.HelmetCopper(x, y)
+        it = ent.Shovel(x, y)
     else:
         it = ent.ShieldWood(x, y)
     game.actors.append(it)
