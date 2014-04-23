@@ -113,8 +113,14 @@ def make_map():
     fov_init()
     
 def make_monster(x, y):
-    m = ent.Zombie(x, y)
-    game.actors.append(m)
+    monster_chances = {}
+    monster_chances[ent.Zombie] = 10
+    monster_chances[None] = 50
+    choice = random_choice(monster_chances)
+    if choice:
+        m=choice(x, y)
+        game.actors.append(m)
+    
 def make_item(x, y):
     dice = tcod.random_get_int(0,0,99)
     if dice < 50:
@@ -263,11 +269,23 @@ def draw(con, skip_fov=False):
         pass
         
         
-        
-        
-        
-        
-        
+def random_choice_index(chances):  #choose one option from list of chances, returning its index
+    #the dice will land on some number between 1 and the sum of the chances
+    dice = tcod.random_get_int(0, 1, sum(chances))
+    #go through all chances, keeping the sum so far
+    running_sum = 0
+    choice = 0
+    for w in chances:
+        running_sum += w
+        #see if the dice landed in the part that corresponds to this choice
+        if dice <= running_sum:
+            return choice
+        choice += 1
+def random_choice(chances_dict):
+    #choose one option from dictionary of chances, returning its key
+    chances = chances_dict.values()
+    strings = chances_dict.keys()
+    return strings[random_choice_index(chances)]
         
         
         

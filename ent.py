@@ -28,7 +28,7 @@ class Player(Entity):
         Entity.__init__(self, x, y, name=self.name, char=self.char, speed=self.speed,
                         attacker=_at, ai=_ai, destructible=_de, container=_co)
         self.sense_objects = True #outside fov
-        self.sense_entities = False #outside fov
+        self.sense_entities = True #outside fov
         self.sense_map = False #this means you can't see smoke!
         self.blind = False #can see characters of the things
         
