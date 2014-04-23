@@ -64,7 +64,7 @@ class Game:
     def menu(self): #new gam or load
         print 'menu: has save game:', os.path.isfile('save')
         while not tcod.console_is_window_closed():
-            gui.draw_main_menu(0)
+            gui.draw_main_menu(0, os.path.isfile('save'))
             key = tcod.console_check_for_keypress(True)
             if key.c == ord('n'):
                 self.new_game()
@@ -75,7 +75,7 @@ class Game:
                     break
                 except:
                     print 'menu: no saved gam'
-            elif key.c == ord('d'):
+            elif key.c == ord('D'):
                 os.remove('save')
                 self.clean_stored_maps()
                 print 'menu: deleted save game'

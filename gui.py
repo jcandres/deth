@@ -99,7 +99,7 @@ def draw_visible(con):
     line = ', '.join(ls)
     tcod.console_print(con, 1, game.GAME_HEIGHT - 4, chr(254)+' '+line)
     
-def draw_main_menu(con):
+def draw_main_menu(con, has_file=False):
     tcod.console_set_default_foreground(con, COL_A)
     img = tcod.image_load('small.png')
     tcod.image_set_key_color(img, tcod.red)
@@ -107,6 +107,12 @@ def draw_main_menu(con):
     
     xx=-20
     yy=15
+    
+    can_cont = ""
+    can_del = ''
+    if has_file:
+        can_cont = '-- (c)ontinue'
+        can_del = '-- (D)elete'
     options=(
              """
              GAME TITLE """+chr(tcod.CHAR_BLOCK2)+chr(tcod.CHAR_BLOCK1)+chr(tcod.CHAR_BLOCK1)+"""
@@ -114,14 +120,18 @@ def draw_main_menu(con):
              |
              \t-- (n)ew game
              |
-             \t--\t-- (c)ontinue
+             \t--\t%s
              |  |
-             |  \t-- (d)elete
+             |  \t%s
              |
              \t-- (esc)cape
-             """)
+             """
+             % (can_cont, can_del)
+            )
     tcod.console_print_ex(con, game.GAME_WIDTH/4+xx, game.GAME_HEIGHT/3+yy,
                               tcod.BKGND_LIGHTEN, tcod.LEFT,options)
+    
+    tcod.console_print(con, 2, game.GAME_HEIGHT-2, 'oyyooyoyoyoyyooyoyoy')
     tcod.console_flush()
     tcod.console_clear(con)
     
