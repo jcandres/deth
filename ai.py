@@ -45,8 +45,14 @@ class AiPlayer(Ai):
     def handle_action_key(self, key):
         #repeat
         if key == ord("x") and self.last_command:
-            self.last_command.pickable.use(self.owner, self.owner)
-            game.game_state = enum.GameS.NEW_TURN
+            for item in self.owner.container.inventory:
+                if item == self.last_command:
+                    self.last_command.pickable.use(self.owner, self.owner)
+                    game.game_state = enum.GameS.NEW_TURN
+                else:
+                    self.last_command = None
+                    game.log("you don't have that object anymore..")
+                    game.log_turn()
         #inventory
         if key == ord("i"):
             gui.draw_inventory(0, self.owner.container.inventory, 'inventory')
@@ -118,7 +124,6 @@ class AiPlayer(Ai):
         return None
 
 class AiZombie(Ai):
-    
     def __init__(self):
         self.tracking_turns = 5
         self.move_count = 0
