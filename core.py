@@ -9,7 +9,7 @@ import gui
 
 class Object:
     def __init__(self, x, y, char="?", name="something",color=tcod.lighter_gray, blocks=True, speed=10,
-                 invisible=False, material=None,
+                 invisible=False, material=None, body=None,
                  destructible=None, attacker=None, ai=None, pickable=None, container=None, equipment=None):
         self.x = x
         self.y = y
@@ -20,6 +20,7 @@ class Object:
         self.blocks = blocks
         self.invisible = invisible
         self.material = material
+        self.body = body
         
         self.speed = speed
         self.action_points = tcod.random_get_int(0,0,speed)
@@ -35,9 +36,12 @@ class Object:
         self.init_components()
     #############################################################################
     @property
+    def set_name(self, new_name):
+        self._name = new_name
+    @property
     def name(self):
         n=[]
-        if self.destructible and self.destructible.is_dead(): n.append('dead')
+        #if self.destructible and self.destructible.is_dead(): n.append('dead')
         if self.invisible: n.append('invisible')
         if self.material: n.append(self.material)
         n.append(self._name)

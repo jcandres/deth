@@ -35,7 +35,7 @@ class AiPlayer(Ai):
             if e and e.blocks and e.destructible:
                 nam = e.name
                 self.owner.attacker.attack(e)
-                game.log(self.owner.name, 'hit the', nam)
+                game.log(self.owner.name, 'hit the', nam, 'in the', enum.rand_body_part(e))
                 if e.destructible.is_dead():
                     game.log(self.owner.name, 'killed the', nam+'!')
                 game.game_state = enum.GameS.NEW_TURN #
@@ -45,14 +45,17 @@ class AiPlayer(Ai):
     def handle_action_key(self, key):
         #repeat
         if key == ord("x") and self.last_command:
+            found = False
             for item in self.owner.container.inventory:
                 if item == self.last_command:
-                    self.last_command.pickable.use(self.owner, self.owner)
-                    game.game_state = enum.GameS.NEW_TURN
-                else:
-                    self.last_command = None
-                    game.log("you don't have that object anymore..")
-                    game.log_turn()
+                    found = True
+            if found:
+                self.last_command.pickable.use(self.owner, self.owner)
+                game.game_state = enum.GameS.NEW_TURN
+            else:
+                self.last_command = None
+                game.log("you don't have that object anymore..")
+                game.log_turn()
         #inventory
         if key == ord("i"):
             gui.draw_inventory(0, self.owner.container.inventory, 'inventory')

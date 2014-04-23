@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+import libtcodpy as tcod
+
+def rand_body_part(entity):
+    if not entity.body:
+        return ''
+    return entity.body[tcod.random_get_int(0,0,len(entity.body))-1]
 
 class GameS:
     STARTUP = 0
@@ -21,3 +27,7 @@ class mat:
     JELLY = 'gelatinous'
     VEGETAL = 'vegetal'
     WOOD = 'wooden'
+    
+class body: #dicts can contain values... maybe used for damages or colors, or..?
+    human = ['head', 'eyes', 'ears', 'mouth', 'torso', 'right hand', 'left hand', 'feet']
+    book = ['pages', 'cover']

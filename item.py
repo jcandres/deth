@@ -55,9 +55,53 @@ class Digger(Pickable):
         
             
 class ExplosiveThrow(Pickable):
+    def __init__(self, radius, damage, length):
+        Pickable.__init__(self) 
+        self.radius = radius
+        self.damage = damage + tcod.random_get_int(0, 0, 2)
+        self.length = length
+    def use(self, wearer, target):
+        d = game.player.ai.choose_direction()
+        if d is None:
+            return False
+        
+        dist = self.length + wearer.power / 3
+        tx =  wearer.x# + d[0]
+        ty =  wearer.y# + d[1]
+        while dist:
+            dist -= 1
+            tx += d[0]
+            ty += d[1]
+            a = map.get_actor_alive(tx, ty)
+            if (a and a is not wearer) or map.is_blocked(tx, ty):
+                dist = 0
+        target_x = tx#wearer.x + (d[0] * self.throw)
+        target_y = ty#wearer.y + (d[1] * self.throw)
+        
+        game.log(wearer.name,"threw the", self.owner.name+'!')
+        game.log_turn()
+        game.log('BOOOM!!')
+        game.log_turn()
+        for x in range(target_x-self.radius, target_x+self.radius):
+            for y in range(target_y-self.radius, target_y+self.radius):
+                if not map.is_wall(x, y):
+                    if map.get_distance_coord(target_x, target_y, x, y) < self.radius:
+                        s = ent.Projectile(x, y, self.damage, wearer, name='explosion', self_remove=True)
+                        game.actors.append(s)
+                        s = ent.Smoke(x, y, tcod.random_get_int(0, 0, game.NORMAL_SPEED*5))
+                        game.actors.append(s)
+                        if map.is_diggable(x, y):
+                            map.set_wall(x, y, False, False)
+        map.fov_recompute(game.player.x, game.player.y)
+        if wearer and wearer.container:
+            wearer.container.inventory.remove(self.owner)
+            pass
+        return True
+    
+class SmokeThrow(Pickable):
     def __init__(self, radius, damage, throw):
         Pickable.__init__(self) 
-        self.radius = radius + tcod.random_get_int(0, 0, 5)
+        self.radius = radius + tcod.random_get_int(0, 0, 2)
         self.damage = damage
         self.throw = throw
     def use(self, wearer, target):
@@ -68,11 +112,11 @@ class ExplosiveThrow(Pickable):
         target_y = wearer.y + (d[1] * self.throw)
         for x in range(target_x-self.radius, target_x+self.radius):
             for y in range(target_y-self.radius, target_y+self.radius):
-                if not map.is_wall(x, y):
+                if not map.is_wall(x, y) and map.get_distance_coord(target_x, target_y, x, y) < self.radius:
                     s = ent.Smoke(x, y, tcod.random_get_int(0, 0, game.NORMAL_SPEED*5))
                     game.actors.append(s)
         map.fov_recompute(game.player.x, game.player.y)
-        game.log("you throw the grenade..")
+        game.log(wearer.name,"threw the", self.owner.name)
         game.log("a really dense gas expands quickly! vision is difficult")
         if wearer and wearer.container:
             wearer.container.inventory.remove(self.owner)
@@ -91,18 +135,18 @@ class SlingshotThrow(Pickable):
             return False
         
         dist = self.length + wearer.power / 3
-        x =  wearer.x + d[0]
-        y =  wearer.y + d[1]
+        x =  wearer.x# + d[0]
+        y =  wearer.y# + d[1]
         while dist:
             dist -= 1
             x += d[0]
             y += d[1]
-            if map.get_actor_alive(x, y):
+            a = map.get_actor_alive(x, y)
+            if (a and a is not wearer) or map.is_blocked(x, y):
                 dist = 0
-            elif map.is_blocked(x, y):
-                dist = 0
-                x -= d[0]
-                y -= d[1]
+                if map.is_wall(x, y):
+                    x -= d[0]
+                    y -= d[1]
         p = ent.Projectile(x, y, self.damage, wearer)
         game.actors.append(p)
         return True

@@ -22,7 +22,6 @@ def log_turn():
     global turn_log
     if len(turn_log) <= 1:
         return False
-    
     messages = textwrap.wrap(turn_log, GAME_WIDTH-2) #divide in several lines if needed
     for l in messages:
         game_log.append(l)
@@ -38,7 +37,7 @@ def concatenate(*args):
 
 def draw_all():
         tcod.console_clear(0)
-        map.draw(0)
+        map.draw(0, player.sense_map)
         for object in actors:
             if not object.blocks:
                 object.draw(0, skip_fov=player.sense_objects,
@@ -85,7 +84,7 @@ class Game:
                 
             
     def loop(self):
-        global game_state, key
+        global game_state, key, actors
         while not tcod.console_is_window_closed():
             if game_state == enum.GameS.NEW_TURN:
                 game_state = enum.GameS.IDLE
@@ -104,9 +103,9 @@ class Game:
                             object.action_points -= NORMAL_SPEED
                     player.action_points += player.speed
                 
-                for object in actors: #remove unnecesary entities safely
-                    if object.remove:
-                        actors.remove(object)
+                ol = [] #make empty list, fill it with alive entities, etc
+                ol[:] = [object for object in actors if not object.remove]
+                actors = ol
                     
                 if game_state == enum.GameS.DEFEAT:
                     if os.path.isfile('save'):

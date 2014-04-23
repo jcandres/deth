@@ -117,14 +117,10 @@ def make_monster(x, y):
     game.actors.append(m)
 def make_item(x, y):
     dice = tcod.random_get_int(0,0,99)
-    if dice < 25:
-        it = ent.PotionHeal(x, y)
-    elif dice < 50:
+    if dice < 50:
         it = ent.Slingshot(x, y)
-    elif dice < 75:
-        it = ent.Shovel(x, y)
     else:
-        it = ent.ShieldWood(x, y)
+        it = ent.Grenade(x, y)
     game.actors.append(it)
     
 
@@ -209,6 +205,10 @@ def get_actor_pickable(x, y):
 def get_distance(ent_a, ent_b):
     dx = ent_a.x - ent_b.x
     dy = ent_a.y - ent_b.y
+    return math.sqrt(dx ** 2 + dy ** 2)
+def get_distance_coord(x1, y1, x2, y2):
+    dx = x1 - x2
+    dy = y1 - y2
     return math.sqrt(dx ** 2 + dy ** 2)
 
 def bsp_callback(node, data):
