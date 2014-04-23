@@ -64,17 +64,17 @@ def draw_hud(con):
     
     if not game.player:
         return False
-    
+
     line = game.concatenate(
         #'| HP: %d / %d' % (game.player.destructible.hp, game.player.destructible.max_hp),
         ' | ' + chr(219) * game.player.destructible.hp + chr(224) * (game.player.destructible.max_hp-game.player.destructible.hp),
         ' | DEF: %d' % game.player.defense,
         ' | POW: %d' % game.player.power,
-        ' | SPD: %d / %d' % (game.player.action_points ,game.player.speed),
         ' | INV: %d' % len(game.player.container.inventory),
+        ' | FLOOR: %d' % (game.level),
         ' | '
         )
-    tcod.console_print_ex(con, 1, game.GAME_HEIGHT-2, tcod.BKGND_ADD, tcod.LEFT, line)    
+    tcod.console_print_ex(con, 1, game.GAME_HEIGHT-2, tcod.BKGND_ADD, tcod.LEFT, line)
     return True
 
 #extracts n lines and prints on screen

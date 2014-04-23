@@ -51,6 +51,10 @@ doors = []
 
 ##population
 def populate():
+    #redefine generation values
+    MAX_ROOM_MONSTERS = from_dungeon_level([[2, 0], [3, 3], [7, 6]])
+    MAX_ROOM_ITEMS = from_dungeon_level([[3, 0], [2, 3], [1, 6]])
+    
     for object in rooms:
         r = object
         num_monsters = tcod.random_get_int(0,0,MAX_ROOM_MONSTERS)
@@ -73,7 +77,31 @@ def populate():
         if r.number == len(rooms)-1:
             game.stairs_down.x = r.center_x
             game.stairs_down.y = r.center_y
-            
+
+def make_monster(x, y):
+    chances = {}
+    #monster_chances[ent.Zombie] = 5 #=always
+    chances[ent.Zombie] = from_dungeon_level([[15, 0], [30, 5], [60, 7]])
+    
+    choice = random_choice(chances)
+    if choice:
+        m=choice(x, y)
+        game.actors.append(m)
+def make_item(x, y):
+    chances = {}
+    chances[ent.MossRed] = from_dungeon_level([[60, 0], [30, 5], [10, 7], [5, 15]])
+    chances[ent.DaggerSmall] = from_dungeon_level([[30, 0], [15, 5], [5, 10]])
+    chances[ent.HelmetCopper] = from_dungeon_level([[30, 2], [15, 7], [5, 15]])
+    chances[ent.ShieldWood] = from_dungeon_level([[30, 0], [10, 5], [5, 10]])
+    chances[ent.Shovel] = from_dungeon_level([[5, 10]])
+    chances[ent.Slingshot] = from_dungeon_level([[3, 10]])
+    chances[ent.GrenadeSmoke] = from_dungeon_level([[10, 7], [5, 15]])
+    chances[ent.Grenade] = from_dungeon_level([[10, 10], [5, 15]])
+    
+    choice = random_choice(chances)
+    if choice:
+        m=choice(x, y)
+        game.actors.append(m)            
 
 ## generation ##
 def make_map():
@@ -111,24 +139,6 @@ def make_map():
     populate()
     
     fov_init()
-    
-def make_monster(x, y):
-    monster_chances = {}
-    monster_chances[ent.Zombie] = 10
-    monster_chances[None] = 50
-    choice = random_choice(monster_chances)
-    if choice:
-        m=choice(x, y)
-        game.actors.append(m)
-    
-def make_item(x, y):
-    dice = tcod.random_get_int(0,0,99)
-    if dice < 50:
-        it = ent.Slingshot(x, y)
-    else:
-        it = ent.Grenade(x, y)
-    game.actors.append(it)
-    
 
 def make_room(leaf, n=0):
     w = tcod.random_get_int(0, MIN_ROOM_SIZE, leaf.w)
@@ -153,88 +163,8 @@ def make_doors(room, number):
             y = room.y2-1
         door = Rect(x,y,1,1,number)
         doors.append(door)
-
-def dig(room):
-    for x in range(room.x1, room.x2):
-        for y in range(room.y1, room.y2):
-            set_wall(x, y, False, False)
-def dig_h_tunnel(x1, x2, y):
-    for x in range(min(x1, x2), max(x1, x2)+1):
-        set_wall(x, y, False, False)
-def dig_v_tunnel(y1, y2, x):
-    for y in range(min(y1, y2), max(y1, y2)+1):
-        set_wall(x, y, False, False)
-            
-def set_wall(x, y, solid=True, visible=True):
-    if solid is not None:
-        map[x][y].blocked = solid
-    if visible is not None:
-        map[x][y].block_sight = visible
-
-## utils and shit ##
-def is_wall(x,y):
-    if not is_in_bounds(x, y):
-        return False
-    return map[x][y].blocked
-
-def is_diggable(x, y):
-    return map[x][y].diggable
-def set_diggable(x, y, can_dig=True):
-    map[x][y].diggable = can_dig
-
-def is_blocked(x, y):
-    if is_wall(x, y):
-        return True
-    for object in game.actors:
-        if object.x==x and object.y==y and object.blocks:
-            return True
-    return False
-def is_in_bounds(x, y):
-    return x >= 0 and y >= 0 and x < MAP_WIDTH and y < MAP_HEIGHT
-
-def get_actor(x, y):
-    for object in game.actors:
-        if object.x==x and object.y==y:
-            return object
-    return None
-def get_actor_alive(x, y):
-    for object in game.actors:
-        if object.x==x and object.y==y and object.destructible and not object.destructible.is_dead():
-            return object
-    return None
-def get_actor_pickable(x, y):
-    for object in game.actors:
-        if object.x==x and object.y==y and object.pickable:
-            return object
-    return None
-
-def get_distance(ent_a, ent_b):
-    dx = ent_a.x - ent_b.x
-    dy = ent_a.y - ent_b.y
-    return math.sqrt(dx ** 2 + dy ** 2)
-def get_distance_coord(x1, y1, x2, y2):
-    dx = x1 - x2
-    dy = y1 - y2
-    return math.sqrt(dx ** 2 + dy ** 2)
-
-def bsp_callback(node, data):
-    if tcod.bsp_is_leaf(node):
-        l = Rect(node.x, node.y, node.w, node.h)
-        leafs.append(l)
-    return True #importent - C wizardy :0
-
-def fov_init():
-    for y in range(MAP_HEIGHT):
-        for x in range(MAP_WIDTH):
-            fov_set(x, y, not map[x][y].block_sight, map[x][y].blocked)
-def fov_set(x, y, visible, blocked):
-    tcod.map_set_properties(fov_map, x, y, visible, not blocked)
-def fov_recompute(x, y):
-    tcod.map_compute_fov(fov_map, x, y, LIGHT_RADIUS, True, 0)
-def is_fov(x, y):
-    return tcod.map_is_in_fov(fov_map, x, y)
-
         
+### DRAW
 def draw(con, skip_fov=False):
     #global map
     tcod.console_set_default_foreground(con, tcod.gray)
@@ -267,8 +197,91 @@ def draw(con, skip_fov=False):
     for object in doors:
         #tcod.console_put_char(0, object.center_x, object.center_y, object.number+65)
         pass
+   
+
+### DIG FUNCTIONS 
+def dig(room):
+    for x in range(room.x1, room.x2):
+        for y in range(room.y1, room.y2):
+            set_wall(x, y, False, False)
+def dig_h_tunnel(x1, x2, y):
+    for x in range(min(x1, x2), max(x1, x2)+1):
+        set_wall(x, y, False, False)
+def dig_v_tunnel(y1, y2, x):
+    for y in range(min(y1, y2), max(y1, y2)+1):
+        set_wall(x, y, False, False)
+            
+def set_wall(x, y, solid=True, visible=True):
+    if solid is not None:
+        map[x][y].blocked = solid
+    if visible is not None:
+        map[x][y].block_sight = visible
+
+## utils and shit ##
+def is_wall(x,y):
+    if not is_in_bounds(x, y):
+        return False
+    return map[x][y].blocked
+
+def is_diggable(x, y):
+    return map[x][y].diggable
+
+def set_diggable(x, y, can_dig=True):
+    map[x][y].diggable = can_dig
+
+def is_blocked(x, y):
+    if is_wall(x, y):
+        return True
+    for object in game.actors:
+        if object.x==x and object.y==y and object.blocks:
+            return True
+    return False
+
+def is_in_bounds(x, y):
+    return x >= 0 and y >= 0 and x < MAP_WIDTH and y < MAP_HEIGHT
+
+def get_actor(x, y):
+    for object in game.actors:
+        if object.x==x and object.y==y:
+            return object
+    return None
+def get_actor_alive(x, y):
+    for object in game.actors:
+        if object.x==x and object.y==y and object.destructible and not object.destructible.is_dead():
+            return object
+    return None
+def get_actor_pickable(x, y):
+    for object in game.actors:
+        if object.x==x and object.y==y and object.pickable:
+            return object
+    return None
+
+def get_distance(ent_a, ent_b):
+    dx = ent_a.x - ent_b.x
+    dy = ent_a.y - ent_b.y
+    return math.sqrt(dx ** 2 + dy ** 2)
+def get_distance_coord(x1, y1, x2, y2):
+    dx = x1 - x2
+    dy = y1 - y2
+    return math.sqrt(dx ** 2 + dy ** 2)
+
+def fov_init():
+    for y in range(MAP_HEIGHT):
+        for x in range(MAP_WIDTH):
+            fov_set(x, y, not map[x][y].block_sight, map[x][y].blocked)
+def fov_set(x, y, visible, blocked):
+    tcod.map_set_properties(fov_map, x, y, visible, not blocked)
+def fov_recompute(x, y):
+    tcod.map_compute_fov(fov_map, x, y, LIGHT_RADIUS, True, 0)
+def is_fov(x, y):
+    return tcod.map_is_in_fov(fov_map, x, y)
         
-        
+def bsp_callback(node, data):
+    if tcod.bsp_is_leaf(node):
+        l = Rect(node.x, node.y, node.w, node.h)
+        leafs.append(l)
+    return True #importent - C wizardy :0
+    
 def random_choice_index(chances):  #choose one option from list of chances, returning its index
     #the dice will land on some number between 1 and the sum of the chances
     dice = tcod.random_get_int(0, 1, sum(chances))
@@ -286,6 +299,14 @@ def random_choice(chances_dict):
     chances = chances_dict.values()
     strings = chances_dict.keys()
     return strings[random_choice_index(chances)]
+def from_dungeon_level(table):
+    '''from_dungeon_level([[level, value], [level, value]]) etc
+    returns a value that depends on level. the table specifies what value occurs after each level, default is 0.
+    '''
+    for (value, level) in reversed(table): ##asumes that table is in ascendent order...
+        if game.level >= level:
+            return value
+    return 0
         
         
         

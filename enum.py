@@ -12,6 +12,8 @@ class GameS:
     NEW_TURN = 2
     VICTORY = 3
     DEFEAT = 4
+    STAIRS_UP = 5
+    STAIRS_DOWN = 6
     
 class dir:
     UP = [0, -1]

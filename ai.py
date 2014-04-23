@@ -35,7 +35,10 @@ class AiPlayer(Ai):
             if e and e.blocks and e.destructible:
                 nam = e.name
                 self.owner.attacker.attack(e)
-                game.log(self.owner.name, 'hit the', nam, 'in the', enum.rand_body_part(e))
+                if tcod.random_get_int(0,0,10)<1 and e.body:
+                    game.log(self.owner.name, 'hit the', nam, 'in the', enum.rand_body_part(e))
+                else:
+                    game.log(self.owner.name, 'hit the', nam)
                 if e.destructible.is_dead():
                     game.log(self.owner.name, 'killed the', nam+'!')
                 game.game_state = enum.GameS.NEW_TURN #
@@ -43,6 +46,29 @@ class AiPlayer(Ai):
                 game.game_state = enum.GameS.NEW_TURN #
         
     def handle_action_key(self, key):
+        #debug
+        '''
+        if key == ord(">"):
+            game.game_state = enum.GameS.STAIRS_DOWN
+            game.log("you descend into the darkness..")
+        if key == ord("<"):
+            game.game_state = enum.GameS.STAIRS_UP
+            game.log("you climb up the stairs..")
+        '''#stairs
+        if key == ord(">"):
+            if self.owner.x == game.stairs_down.x and self.owner.y == game.stairs_down.y:
+                game.game_state = enum.GameS.STAIRS_DOWN
+                game.log("you descend into the darkness..")
+            else:
+                game.log("you can't go down here")
+                game.log_turn()
+        if key == ord("<"):
+            if self.owner.x == game.stairs_up.x and self.owner.y == game.stairs_up.y:
+                game.game_state = enum.GameS.STAIRS_UP
+                game.log("you climb up..")
+            else:
+                game.log("you can't go up here")
+                game.log_turn()
         #repeat
         if key == ord("x") and self.last_command:
             found = False

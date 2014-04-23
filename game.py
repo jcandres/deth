@@ -92,6 +92,11 @@ class Game:
             key = tcod.console_check_for_keypress(True)
             player.take_turn() #different actions will trigger the new turn
             
+            if game_state == enum.GameS.STAIRS_DOWN:
+                self.change_floor(+1)
+            elif game_state == enum.GameS.STAIRS_UP:
+                self.change_floor(-1)
+                    
             ### turn loop
             if game_state == enum.GameS.NEW_TURN:
                 player.action_points -= NORMAL_SPEED #player pays its movement
@@ -107,11 +112,11 @@ class Game:
                 ol = [object for object in actors if not object.remove]
                 actors = ol
                     
-                if game_state == enum.GameS.DEFEAT:
-                    if os.path.isfile('save'):
-                        os.remove('save')
                 map.fov_recompute(player.x, player.y)
                 log_turn()
+            if game_state == enum.GameS.DEFEAT:
+                if os.path.isfile('save'):
+                    os.remove('save')
             ### end of turn loop
             
             draw_all()
@@ -127,24 +132,46 @@ class Game:
             self.save_game()
             print 'end-func: saved!'
         self.menu()
+    
+    def change_floor(self, amount):
+        global game_state, level, actors, game_log, player, stairs_up, stairs_down
+        level = level + amount
         
-        
+        actors = []
+        actors.append(player)
+        actors.append(stairs_up)
+        actors.append(stairs_down)
+        map.make_map()
+        if amount > 0: #down
+            player.x = stairs_up.x
+            player.y = stairs_up.y
+        else:
+            player.x = stairs_down.x ############## save each map as a file  --- load them back
+            player.y = stairs_down.y
+        log("you are now at floor", level)
+        log_turn()
+        map.fov_recompute(player.x, player.y)
+        game_state = enum.GameS.IDLE
+        tcod.console_flush()
+    
     def save_game(self):
-        global game_state, actors, game_log, player, stairs_up, stairs_down
+        global game_state, actors, game_log, player, stairs_up, stairs_down, level
         file = shelve.open('save', 'n')
         file['game_state'] = game_state
         file['actors'] = actors
+        file['level'] = level
         file['player_index'] = actors.index(player)
         file['stairs_u_index'] = actors.index(stairs_up)
         file['stairs_d_index'] = actors.index(stairs_down)
         file['game_log'] = game_log
         file['map'] = map.map
         file.close()
-        
+  
     def load_game(self):
-        global game_state, actors, game_log, player, stairs_up, stairs_down
+        global game_state, actors, game_log, player, stairs_up, stairs_down, level
         file = shelve.open('save', 'r')
         game_state = file['game_state']
+        level = file['level']
         actors = file['actors']
         player = actors[file['player_index']]
         stairs_up = actors[file['stairs_u_index']]
@@ -156,10 +183,11 @@ class Game:
         map.fov_recompute(player.x, player.y)
         
     def new_game(self):
-        global game_state, actors, game_log, player, stairs_up, stairs_down
+        global game_state, actors, game_log, player, stairs_up, stairs_down, level
         game_state = enum.GameS.STARTUP
         actors = []
         game_log = []
+        level = 1
         
         player = ent.Player(0,0)
         stairs_up = ent.Entity(1,2,"<", "upward staircase", blocks=False)
@@ -172,5 +200,6 @@ class Game:
         map.make_map()
         map.fov_recompute(player.x, player.y)
         
+        stairs_up.x, stairs_up.y = (-1, -1)
         game_state = enum.GameS.IDLE
         tcod.console_flush()

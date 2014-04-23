@@ -18,8 +18,8 @@ class Entity(core.Object):
 class Player(Entity):
     def __init__(self, x, y):
         _ai = ai.AiPlayer()
-        _at = hit.Attacker(5)
-        _de = hit.DestructiblePlayer(15, 1)
+        _at = hit.Attacker(3)
+        _de = hit.DestructiblePlayer(10, 1)
         _co = item.Container(15)
         self.name = 'you'
         self.char = '@'
@@ -27,8 +27,8 @@ class Player(Entity):
         
         Entity.__init__(self, x, y, name=self.name, char=self.char, speed=self.speed,
                         attacker=_at, ai=_ai, destructible=_de, container=_co)
-        self.sense_objects = True #outside fov
-        self.sense_entities = True #outside fov
+        self.sense_objects = False #outside fov
+        self.sense_entities = False #outside fov
         self.sense_map = False #this means you can't see smoke!
         self.blind = False #can see characters of the things
         
@@ -41,7 +41,7 @@ class Player(Entity):
 class Zombie(Entity):
     def __init__(self, x, y):
         _ai = ai.AiZombie()
-        _de = hit.DestructibleMonster(10, 1, corpse_name="zombie body")
+        _de = hit.DestructibleMonster(7, 1, corpse_name="zombie body")
         _at = hit.Attacker(2)
         self.speed = tcod.random_get_int(0, 4, 6)
         bod = enum.body.human
@@ -70,7 +70,7 @@ class HelmetCopper(Entity):
         Entity.__init__(self, x, y, name='copper helmet', char='[', blocks=False, equipment=_eq)
 class ShieldWood(Entity):
     def __init__(self, x, y):
-        _eq = item.Equip('left hand', de=1, po=1)
+        _eq = item.Equip('left hand', de=1)
         Entity.__init__(self, x, y, name='small shield', material=enum.mat.WOOD, char='[',
                         blocks=False, equipment=_eq)
 # consumables #

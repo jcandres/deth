@@ -257,12 +257,8 @@ class Attacker:
     def attack_tile(self, x, y):
         target = map.get_actor_alive(x, y)
         if target:
-            if self.owner.power > target.defense:
-                target.destructible.take_damage(self.owner.power)
-                #return self.owner.power - target.defense
+            if self.attack(target):
                 return target
-            else:
-                return False
         return None
 
 ###### AI
