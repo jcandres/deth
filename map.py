@@ -20,6 +20,7 @@ class Rect:
 class Tile:
     def __init__(self, blocked, block_sight=None):
         self.explored = False
+        self.diggable = True
         self.blocked = blocked
         if block_sight is None:
             block_sight = blocked
@@ -33,9 +34,9 @@ MIN_LEAF_SIZE = 8
 MAX_ROOM_SIZE = 12
 MIN_ROOM_SIZE = 5
 
-MAX_ROOM_DOORS = 2
+MAX_ROOM_DOORS = 2  
 MAX_ROOM_MONSTERS = 3
-MAX_ROOM_ITEMS = 3
+MAX_ROOM_ITEMS = 2
 
 LIGHT_RADIUS = 7
 
@@ -46,6 +47,7 @@ fov_map = tcod.map_new(MAP_WIDTH, MAP_HEIGHT)
 leafs = []
 rooms = []
 doors = []
+
 
 ##population
 def populate():
@@ -75,7 +77,7 @@ def populate():
 
 ## generation ##
 def make_map():
-    global map, leafs, rooms, doors
+    global map, leafs, rooms, doors, fov_map
     map = [[Tile(True)
         for y in range(MAP_HEIGHT) ]
             for x in range(MAP_WIDTH) ]
@@ -98,6 +100,13 @@ def make_map():
         prev = doors[object.number-1]
         dig_h_tunnel(prev.center_x, object.center_x, prev.center_y)
         dig_v_tunnel(prev.center_y, object.center_y, object.center_x)
+    
+    for x in range(0, MAP_WIDTH):
+        set_diggable(x,0,False)
+        set_diggable(x,MAP_HEIGHT-1,False)
+    for y in range(0, MAP_HEIGHT):
+        set_diggable(0,y,False)
+        set_diggable(MAP_WIDTH-1,y,False)
     
     populate()
     
@@ -160,12 +169,16 @@ def set_wall(x, y, solid=True, visible=True):
     if visible is not None:
         map[x][y].block_sight = visible
 
-
 ## utils and shit ##
 def is_wall(x,y):
     if not is_in_bounds(x, y):
         return False
     return map[x][y].blocked
+
+def is_diggable(x, y):
+    return map[x][y].diggable
+def set_diggable(x, y, can_dig=True):
+    map[x][y].diggable = can_dig
 
 def is_blocked(x, y):
     if is_wall(x, y):
@@ -175,7 +188,7 @@ def is_blocked(x, y):
             return True
     return False
 def is_in_bounds(x, y):
-    return x > 0 and y > 0 and x < MAP_WIDTH and y < MAP_HEIGHT
+    return x >= 0 and y >= 0 and x < MAP_WIDTH and y < MAP_HEIGHT
 
 def get_actor(x, y):
     for object in game.actors:

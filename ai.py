@@ -53,6 +53,24 @@ class AiPlayer(Ai):
                     self.last_command = None
                     game.log("you don't have that object anymore..")
                     game.log_turn()
+        #dig
+        if key == ord("D"):
+            gui.draw_directions(0, self.owner)
+            d = self.choose_direction()
+            dx = self.owner.x + d[0]
+            dy = self.owner.y + d[1]
+            if map.is_wall(dx, dy):
+                if map.is_diggable(dx, dy):
+                    map.set_wall(dx, dy, False, False)
+                    game.log('with great effort, you dig into the solid rock')
+                    self.owner.action_points -= game.NORMAL_SPEED*10
+                    game.game_state = enum.GameS.NEW_TURN
+                else:
+                    game.log('this rock is too hard to dig..')
+                    game.game_state = enum.GameS.NEW_TURN
+            else:
+                game.log('nothing to dig here')
+                game.log_turn()
         #inventory
         if key == ord("i"):
             gui.draw_inventory(0, self.owner.container.inventory, 'inventory')
