@@ -12,6 +12,9 @@ class Ai(core.Ai):
     pass
 
 class AiPlayer(Ai):
+    def __init__(self):
+        Ai.__init__(self)
+        self.last_command = None
     def update(self):
         dx = 0
         dy = 0
@@ -40,6 +43,10 @@ class AiPlayer(Ai):
                 game.game_state = enum.GameS.NEW_TURN #
         
     def handle_action_key(self, key):
+        #repeat
+        if key == ord("x") and self.last_command:
+            self.last_command.pickable.use(self.owner, self.owner)
+            game.game_state = enum.GameS.NEW_TURN
         #inventory
         if key == ord("i"):
             gui.draw_inventory(0, self.owner.container.inventory, 'inventory')
@@ -47,6 +54,7 @@ class AiPlayer(Ai):
             if item is not None:
                 if item.pickable.use(self.owner, self.owner):
                     game.game_state = enum.GameS.NEW_TURN
+                    self.last_command = item
                 else:
                     game.log("that's a silly thing to use")
                     game.log_turn()
